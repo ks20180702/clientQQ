@@ -9,6 +9,10 @@
 
 #include <vector>
 
+/*
+    win下的select不支持将标准输入加入，之前的代码有点不通用，
+    这里在run中改成win下版本
+*/
 class ClientQQ
 {
 public:

@@ -7,18 +7,18 @@ int ClientQQ::client_init(char *ipAddr)
 {
 
     WSADATA WSAData;
-    if (WSAStartup(MAKEWORD(1, 1), &WSAData))
+    if (WSAStartup(MAKEWORD(2, 2), &WSAData))
     {
         printf("initializationing error!\n");
         WSACleanup();
-        exit(0);
+        return -1;
     }
 
     if ((_cliSoc = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
         printf("创建套接字失败!\n");
         WSACleanup();
-        exit(0);
+        return -1;
     }
 
     _cliSoc=socket(AF_INET,SOCK_DGRAM,0);
@@ -28,12 +28,13 @@ int ClientQQ::client_init(char *ipAddr)
     _serAddr.sin_port=htons(SERVER_PORT);
 //    inet_pton(AF_INET,ipAddr,&(_serAddr.sin_addr));
     _serAddr.sin_addr.s_addr=inet_addr(ipAddr);
+
     return 0;
 }
 int ClientQQ::select_init()
 {
     FD_ZERO(&_globalFdset);
-    FD_SET(0,&_globalFdset); //加入标准输入
+    // FD_SET(0,&_globalFdset); //加入标准输入
     FD_SET(_cliSoc,&_globalFdset);
 
     return 0;
@@ -41,8 +42,7 @@ int ClientQQ::select_init()
 int ClientQQ::run()
 {
     fd_set currFdset;
-    struct sockaddr_in serAddr;
-    int serLen=sizeof(serAddr);
+    struct timeval timeout={3,0};
     char buf[SEND_RECV_BUF_SIZE]={0},inputDate[SEND_RECV_BUF_SIZE]={0};
     size_t r;
 
@@ -54,8 +54,10 @@ int ClientQQ::run()
         int serLen=sizeof(_serAddr);
         currFdset=_globalFdset;
         
-        if((ndfsNum=select(nfdsMax+1,&currFdset,NULL,NULL,NULL))<0) {perror("select error:");break;}
-        if(ndfsNum==0) continue;
+        if((ndfsNum=select(nfdsMax+1,&currFdset,NULL,NULL,&timeout))<0) {
+            strcpy(_errMsg,"select error ");return -1;
+        }
+       if(ndfsNum==0) continue;
 
         for(int i=0;i<=nfdsMax;i++)
         {
@@ -199,13 +201,9 @@ int ClientQQ::param_input_cmd(char *inputBuf)
 
         CUser myUser(1,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
         CLoginCmd logInfo(myUser);
-
-        std::ostringstream ss;
-        cereal::JSONOutputArchive archive(ss);
-        archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
-        std::cout<<ss.str()<<std::endl;
-
-        send_part((char *)(ss.str().c_str()),ss.str().length(),true);
+        
+        cmdJsonStr=logInfo.get_command_obj_json();
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
     }
     else if(strcmp(inputBuf,"2")==0)
     {
@@ -239,7 +237,9 @@ int ClientQQ::param_input_cmd(char *inputBuf)
         send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
     }
     else{
-        std::cout<<"[input != 1 and 2] do nothing "<<std::endl;
+        send_part(inputBuf,sizeof(inputBuf),true);
+
+        std::cout<<inputBuf<<std::endl;
     }
     return 0;
 }
