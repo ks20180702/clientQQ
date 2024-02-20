@@ -48,41 +48,62 @@ int ClientQQ::run()
 
     int ndfsNum;
     int nfdsMax=_cliSoc; //其实客户端这里只有两个，且不会变，这样写只是为了看起来通用
+    // int serLen=sizeof(_serAddr);
+
 
     while(1)
     {
+        scanf("%s",inputDate);
+        param_input_cmd(inputDate);
+
         int serLen=sizeof(_serAddr);
-        currFdset=_globalFdset;
-        
-        if((ndfsNum=select(nfdsMax+1,&currFdset,NULL,NULL,&timeout))<0) {
-            strcpy(_errMsg,"select error ");return -1;
-        }
-       if(ndfsNum==0) continue;
-
-        for(int i=0;i<=nfdsMax;i++)
+        while(1)
         {
-            if(!FD_ISSET(i,&currFdset)) continue;
-
-            if(i==_cliSoc) // 接收到服务端的数据
-            {
-                FD_CLR(i,&currFdset);
-
-                memset(buf,0,SEND_RECV_BUF_SIZE);
-                r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&_serAddr,&serLen);
-                if(r<0) {strcpy(_errMsg,"recvfrom error "); return -1;}
-
-                recv_cmd_part(buf,r);
+            int serLen=sizeof(_serAddr);
+            currFdset=_globalFdset;
+            
+            if((ndfsNum=select(nfdsMax+1,&currFdset,NULL,NULL,&timeout))<0) {
+                strcpy(_errMsg,"select error ");return -1;
             }
-            else if(i==0) // i/o输入
+            if(ndfsNum==0) continue;
+
+            for(int i=0;i<=nfdsMax;i++)
             {
-                FD_CLR(i,&currFdset);
+                if(!FD_ISSET(i,&currFdset)) continue;
 
-                memset(inputDate,0,SEND_RECV_BUF_SIZE);
-                scanf("%s",inputDate);
+                if(i==_cliSoc) // 接收到服务端的数据
+                {
+                    FD_CLR(i,&currFdset);
 
-                param_input_cmd(inputDate);
+                    memset(buf,0,SEND_RECV_BUF_SIZE);
+                    r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&_serAddr,&serLen);
+                    if(r<0) {strcpy(_errMsg,"recvfrom error "); return -1;}
+
+                    recv_cmd_part(buf,r);
+                    if(strcmp(buf,"KS_END")==0){break;}
+                }
             }
-        }
+            if(strcmp(buf,"KS_END")==0){break;} //由于buf在接收数据前清空，所以可以用来判断结束
+        }  
+        /*非常之奇怪，用上面的代码就接收不到数据，暂时使用上面的无效select，后面再优化*/
+        // while(1)
+        // {
+        //     std::cout<<"sb"<<std::endl;
+        //     memset(buf,0,1024);
+        //     r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,
+        //             (struct sockaddr*)&_serAddr,&serLen);
+        //     if(r<0) {strcpy(_errMsg,"recvfrom error"); return -1;}
+
+        //     recv_cmd_part(buf,r);
+
+        //     std::cout<<buf<<std::endl;
+
+        //     if(strcmp(buf,"KS_END")==0)
+        //     {
+        //         std::cout<<"[over] recv KS_END now over"<<std::endl;
+        //         break;
+        //     }
+        // }
     }
 }
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
@@ -90,6 +111,8 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     //是否开始接收，当接收到开始标志(KS_START)表示开始接收整条语句
     static bool cmdStrOver=false;
     static std::string tempStr="";
+
+    std::cout<<"tempStr cmd =  "<<std::string(buf,readNum)<<std::endl;
 
     if(cmdStrOver==true)
     {

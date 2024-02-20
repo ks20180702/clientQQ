@@ -21,13 +21,14 @@ int main()
     std::cout<<"main +++"<<std::endl;
 
     ClientQQ myCli;
-    std::cout<<myCli.client_init("192.168.47.135")<<std::endl;
+    myCli.client_init("192.168.47.135");
     myCli.select_init() ;
 
     myCli.run();
     std::cout << myCli.get_error() << std::endl;
     
     std::cout<<"main over"<<std::endl;
+
 }
 
 
