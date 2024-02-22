@@ -8,6 +8,7 @@
 #include "friendshipChangeCmd.h"
 
 #include <vector>
+#include <memory>
 
 /*
     win下的select不支持将标准输入加入，之前的代码有点不通用，
@@ -31,6 +32,10 @@ public:
     //错误-1，成功则循环等待
     int run();
 
+    //解析输入的字符串命令，1登录...
+    //返回：错误-1
+    int param_input_cmd(char *inputBuf);
+
     //分批发送数据，暂定1024
     //错误-1，成功0
     // isCmd 是否发送为指令类，是则会自动增加前后关键字符
@@ -39,10 +44,6 @@ public:
     //按指定协议分批接收数据
     //错误-1，成功0
     int recv_cmd_part(char *buf,int readNum);
-
-    //解析输入的字符串命令，1登录...
-    //返回：错误-1
-    int param_input_cmd(char *inputBuf);
 
     //解析接收字符串，转成指定的指令对象
     //错误-1，
@@ -62,6 +63,9 @@ private:
     struct sockaddr_in _serAddr;
 
     fd_set _globalFdset;
+
+    //指向指令对象
+    std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;
 };
 
 

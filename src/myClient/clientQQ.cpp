@@ -54,6 +54,9 @@ int ClientQQ::run()
     while(1)
     {
         scanf("%s",inputDate);
+        std::cout<<"1 is [loginCmd]"<<std::endl;
+        std::cout<<"2 is [CHANGE_USER or add_user]"<<std::endl;
+        std::cout<<"3 is [del friendShip or add friendShip ]"<<std::endl;
         param_input_cmd(inputDate);
 
         int serLen=sizeof(_serAddr);
@@ -83,36 +86,80 @@ int ClientQQ::run()
                     if(strcmp(buf,"KS_END")==0){break;}
                 }
             }
-            if(strcmp(buf,"KS_END")==0){break;} //由于buf在接收数据前清空，所以可以用来判断结束
+            if(strcmp(buf,"KS_END")==0){break;} //由于buf在此处还未清空，所以可以用来判断结束
         }  
-        /*非常之奇怪，用上面的代码就接收不到数据，暂时使用上面的无效select，后面再优化*/
-        // while(1)
-        // {
-        //     std::cout<<"sb"<<std::endl;
-        //     memset(buf,0,1024);
-        //     r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,
-        //             (struct sockaddr*)&_serAddr,&serLen);
-        //     if(r<0) {strcpy(_errMsg,"recvfrom error"); return -1;}
 
-        //     recv_cmd_part(buf,r);
-
-        //     std::cout<<buf<<std::endl;
-
-        //     if(strcmp(buf,"KS_END")==0)
-        //     {
-        //         std::cout<<"[over] recv KS_END now over"<<std::endl;
-        //         break;
-        //     }
-        // }
     }
 }
+int ClientQQ::param_input_cmd(char *inputBuf)
+{
+    //将当前的指令对象指向null
+    if(nullptr!= _nowUseCmdObj)
+    {
+        _nowUseCmdObj=nullptr;
+    }
+
+    std::string cmdJsonStr;
+    if(strcmp(inputBuf,"1")==0)
+    {
+        std::cout<<"[input == 1] run login "<<std::endl;
+
+        CUser myUser(1,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+        CLoginCmd logInfo(myUser);
+        
+        cmdJsonStr=logInfo.get_command_obj_json();
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
+
+        _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
+    }
+    else if(strcmp(inputBuf,"2")==0)
+    {
+        std::cout<<"[input == 2] run user change "<<std::endl;
+
+        CUser myUser(1,(char*)"141414",(char*)"123456",(char*)"ks_13",23,"","2023-11-29 19:32:00");
+        CUserChangeCmd userChangeCmd;
+        userChangeCmd.set_operator_user(myUser);
+        //数据库操作修改用户信息好像有点问题，不报错但是没反应
+        userChangeCmd.set_operator_type(CUserChangeCmd::CHANGE_USER);
+        // userChangeCmd.set_operator_type(CUserChangeCmd::ADD_USER);
+
+        cmdJsonStr=userChangeCmd.get_command_obj_json();
+
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
+
+        _nowUseCmdObj=std::make_shared<CUserChangeCmd>(userChangeCmd);
+    }
+    else if(strcmp(inputBuf,"3")==0)
+    {
+        std::cout<<"[input == 3] run user change "<<std::endl;
+
+        CUser user1((char*)"141414",(char*)"123456",(char*)"ks_14",23);
+        CUser userFriend((char*)"131313",(char*)"123456",(char*)"ks_13",23);
+        CFriendshipChangeCmd friendShipChange;
+
+        friendShipChange.set_user(user1);
+        friendShipChange.set_friend_user(userFriend);
+        friendShipChange.set_operator_type(CFriendshipChangeCmd::DELETT_FRIEND);
+
+        cmdJsonStr=friendShipChange.get_command_obj_json();
+
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
+
+        _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(friendShipChange);
+    }
+    else{
+        send_part(inputBuf,sizeof(inputBuf),true);
+
+        std::cout<<inputBuf<<std::endl;
+    }
+    return 0;
+}
+
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
     //是否开始接收，当接收到开始标志(KS_START)表示开始接收整条语句
     static bool cmdStrOver=false;
     static std::string tempStr="";
-
-    std::cout<<"tempStr cmd =  "<<std::string(buf,readNum)<<std::endl;
 
     if(cmdStrOver==true)
     {
@@ -147,35 +194,72 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
 
 int ClientQQ::param_cmd_str(std::string cmdStr)
 {
-    CmdBase::CmdType childCmdType;
+    std::cout<<"++++++++++++++++++++"<<std::endl;
+    std::cout<<cmdStr<<"\n}"<<std::endl;
+    std::cout<<"++++++++++++++++++++"<<std::endl;
 
-	std::istringstream iss(cmdStr+"\n}");
-	cereal::JSONInputArchive archive(iss);
-	archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
+    // CmdBase::CmdType childCmdType;
 
-    if(CmdBase::LOGIN_CMD== childCmdType)
-    {
-        CLoginCmd loginInfo;
-        archive(cereal::make_nvp("logInfo", loginInfo));
-        (loginInfo.get_login_user()).print();
-        if(!loginInfo._childDoCommandReturn)
-        {
-            std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
-            return -1;
-        }
-        std::cout<<"[I]  欢迎登录"<<std::endl;
-        std::vector<CUser> friendLists=loginInfo.get_friend_lists();
-        std::vector<CMsg> notRecvMsgsLists=loginInfo.get_not_recv_msg_lists();
-        for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
-        {
-            (*it).print();
-        }
-        for(std::vector<CMsg>::iterator it=notRecvMsgsLists.begin();it!=notRecvMsgsLists.end();it++)
-        {
-            (*it).print();
-        }
-    }
+	_nowUseCmdObj->reload_recv_obj(cmdStr);
 
+    std::cout<<"return mess:"<<_nowUseCmdObj->_childDoCommandReturn<<std::endl;
+    // if(CmdBase::LOGIN_CMD== childCmdType)
+    // {
+    //     CLoginCmd loginInfo;
+    //     archive(cereal::make_nvp("logInfo", loginInfo));
+    //     (loginInfo.get_login_user()).print();
+    //     if(!loginInfo._childDoCommandReturn)
+    //     {
+    //         std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
+    //         return -1;
+    //     }
+    //     std::cout<<"[I]  欢迎登录"<<std::endl;
+    //     std::vector<CUser> friendLists=loginInfo.get_friend_lists();
+    //     std::vector<CMsg> notRecvMsgsLists=loginInfo.get_not_recv_msg_lists();
+    //     for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
+    //     {
+    //         (*it).print();
+    //     }
+    //     for(std::vector<CMsg>::iterator it=notRecvMsgsLists.begin();it!=notRecvMsgsLists.end();it++)
+    //     {
+    //         (*it).print();
+    //     }
+    // }
+    // CmdBase::CmdType childCmdType;
+
+	// std::istringstream iss(cmdStr+"\n}");
+    // std::cout<<cmdStr+"\n}"<<std::endl;
+	// cereal::JSONInputArchive archive(iss);
+	// archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
+
+    // if(nullptr!= _nowUseCmdObj)
+    // {
+    //     _nowUseCmdObj=nullptr;
+    // }
+    // if(CmdBase::LOGIN_CMD== childCmdType)
+    // {
+    //     CLoginCmd logInfo;
+    //     archive(cereal::make_nvp("logInfo", logInfo));
+
+    //     _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
+    // }
+    // else if(CmdBase::USER_CHANGE_CMD== childCmdType)
+    // {
+    //     CUserChangeCmd logInfo;
+    //     archive(cereal::make_nvp("logInfo", logInfo));
+
+    //     _nowUseCmdObj=std::make_shared<CUserChangeCmd>(logInfo);
+    // }
+    // else if(CmdBase::FRIEND_SHIP_CHANGE_CMD== childCmdType)
+    // {
+    //     CFriendshipChangeCmd logInfo;
+    //     archive(cereal::make_nvp("logInfo", logInfo));
+
+    //     _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(logInfo);
+    // }
+
+    // _nowUseCmdObj->do_command(_cmdOtlUse);
+    
     return 0;
 }
 
@@ -212,58 +296,6 @@ int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
         if(w<0) {strcpy(_errMsg,"send error"); return -1;}
     }
 
-    return 0;
-}
-
-int ClientQQ::param_input_cmd(char *inputBuf)
-{
-    std::string cmdJsonStr;
-    if(strcmp(inputBuf,"1")==0)
-    {
-        std::cout<<"[input == 1] run login "<<std::endl;
-
-        CUser myUser(1,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
-        CLoginCmd logInfo(myUser);
-        
-        cmdJsonStr=logInfo.get_command_obj_json();
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-    }
-    else if(strcmp(inputBuf,"2")==0)
-    {
-        std::cout<<"[input == 2] run user change "<<std::endl;
-
-        CUser myUser(1,(char*)"141414",(char*)"123456",(char*)"ks_13",23,"","2023-11-29 19:32:00");
-        CUserChangeCmd userChangeCmd;
-        userChangeCmd.set_operator_user(myUser);
-        //数据库操作修改用户信息好像有点问题，不报错但是没反应
-        // userChangeCmd.set_operator_type(CUserChangeCmd::CHANGE_USER);
-        userChangeCmd.set_operator_type(CUserChangeCmd::ADD_USER);
-
-        cmdJsonStr=userChangeCmd.get_command_obj_json();
-
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-    }
-    else if(strcmp(inputBuf,"3")==0)
-    {
-        std::cout<<"[input == 3] run user change "<<std::endl;
-
-        CUser user1((char*)"141414",(char*)"123456",(char*)"ks_14",23);
-        CUser userFriend((char*)"131313",(char*)"123456",(char*)"ks_13",23);
-        CFriendshipChangeCmd friendShipChange;
-
-        friendShipChange.set_user(user1);
-        friendShipChange.set_friend_user(userFriend);
-        friendShipChange.set_operator_type(CFriendshipChangeCmd::DELETT_FRIEND);
-
-        cmdJsonStr=friendShipChange.get_command_obj_json();
-
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-    }
-    else{
-        send_part(inputBuf,sizeof(inputBuf),true);
-
-        std::cout<<inputBuf<<std::endl;
-    }
     return 0;
 }
 

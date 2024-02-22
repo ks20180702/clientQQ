@@ -33,6 +33,8 @@ public:
 
     virtual std::string get_command_obj_json();
 
+    virtual void reload_recv_obj(std::string cmdStr){};
+    
     //设置需操作的用户，用户的好友，操作类型
     void set_user(CUser &myUser);
     void set_friend_user(CUser &friendUser);

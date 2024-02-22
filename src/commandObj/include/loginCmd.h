@@ -30,6 +30,9 @@ public:
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
 
+    //重新加载接收到的登录指令对象(登录结果，好友，未读消息)
+    virtual void reload_recv_obj(std::string cmdStr);
+
     // 设置当前的登录对象
     void set_login_user(CUser &loginUser);
 
@@ -47,6 +50,8 @@ public:
 
     //设置未接收消息
     void set_not_recv_msg_lists(std::vector<CMsg> &notRecvMsgsLists);
+
+
 
     //序列化
     template <class Archive>

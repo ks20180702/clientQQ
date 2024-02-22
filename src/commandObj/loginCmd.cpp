@@ -1,12 +1,13 @@
 #include "./include/loginCmd.h"
 
 CLoginCmd::CLoginCmd()
-    :_loginUser(){_childCmdType=LOGIN_CMD;}
+    :_loginUser(){_childCmdType=LOGIN_CMD;_childDoCommandReturn=false;}
     
 CLoginCmd::CLoginCmd(CUser &loginUser)
 {
     _loginUser=loginUser;
     _childCmdType=LOGIN_CMD;
+    _childDoCommandReturn=false;
 }  
 int CLoginCmd::do_command()
 {
@@ -44,6 +45,12 @@ std::string CLoginCmd::get_command_obj_json()
     archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
 
     return ss.str();
+}
+void CLoginCmd::reload_recv_obj(std::string cmdStr)
+{
+    std::istringstream iss(cmdStr+"\n}");
+	cereal::JSONInputArchive archive(iss);
+	archive(cereal::make_nvp("logInfo", *this));
 }
 
 void CLoginCmd::set_login_user(CUser &loginUser)

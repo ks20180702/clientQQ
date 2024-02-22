@@ -23,6 +23,9 @@ public:
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json()=0;
 
+    //重新加载接收到的对象(服务器存储有用数据的对象)
+    virtual void reload_recv_obj(std::string cmdStr)=0;
+
     enum CmdType
     {
         LOGIN_CMD,

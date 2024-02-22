@@ -16,6 +16,8 @@ public:
 
     virtual CDataBase* get_data_value() override;
 
+    virtual void reload_recv_obj(std::string cmdStr){};
+
 private:
     CMsgData _msgData;
 };

@@ -35,6 +35,8 @@ public:
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json() override;
 
+    virtual void reload_recv_obj(std::string cmdStr){};
+    
     //获取和设置用户(获取的并不是同一个)
     void set_operator_user(CUser &operatorUser);
     CUser get_operator_user();
