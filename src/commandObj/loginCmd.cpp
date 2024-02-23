@@ -52,6 +52,25 @@ void CLoginCmd::reload_recv_obj(std::string cmdStr)
 	cereal::JSONInputArchive archive(iss);
 	archive(cereal::make_nvp("logInfo", *this));
 }
+void CLoginCmd::show_do_command_info()
+{
+    if(!_childDoCommandReturn)
+    {
+        std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
+        // return -1;
+    }
+    std::cout<<"[I]  欢迎登录"<<std::endl;
+    std::vector<CUser> friendLists=get_friend_lists();
+    std::vector<CMsg> notRecvMsgsLists=get_not_recv_msg_lists();
+    for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
+    {
+        (*it).print();
+    }
+    for(std::vector<CMsg>::iterator it=notRecvMsgsLists.begin();it!=notRecvMsgsLists.end();it++)
+    {
+        (*it).print();
+    }
+}
 
 void CLoginCmd::set_login_user(CUser &loginUser)
 {

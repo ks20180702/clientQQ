@@ -202,64 +202,9 @@ int ClientQQ::param_cmd_str(std::string cmdStr)
 
 	_nowUseCmdObj->reload_recv_obj(cmdStr);
 
+    _nowUseCmdObj->show_do_command_info();
     std::cout<<"return mess:"<<_nowUseCmdObj->_childDoCommandReturn<<std::endl;
-    // if(CmdBase::LOGIN_CMD== childCmdType)
-    // {
-    //     CLoginCmd loginInfo;
-    //     archive(cereal::make_nvp("logInfo", loginInfo));
-    //     (loginInfo.get_login_user()).print();
-    //     if(!loginInfo._childDoCommandReturn)
-    //     {
-    //         std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
-    //         return -1;
-    //     }
-    //     std::cout<<"[I]  欢迎登录"<<std::endl;
-    //     std::vector<CUser> friendLists=loginInfo.get_friend_lists();
-    //     std::vector<CMsg> notRecvMsgsLists=loginInfo.get_not_recv_msg_lists();
-    //     for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
-    //     {
-    //         (*it).print();
-    //     }
-    //     for(std::vector<CMsg>::iterator it=notRecvMsgsLists.begin();it!=notRecvMsgsLists.end();it++)
-    //     {
-    //         (*it).print();
-    //     }
-    // }
-    // CmdBase::CmdType childCmdType;
 
-	// std::istringstream iss(cmdStr+"\n}");
-    // std::cout<<cmdStr+"\n}"<<std::endl;
-	// cereal::JSONInputArchive archive(iss);
-	// archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
-
-    // if(nullptr!= _nowUseCmdObj)
-    // {
-    //     _nowUseCmdObj=nullptr;
-    // }
-    // if(CmdBase::LOGIN_CMD== childCmdType)
-    // {
-    //     CLoginCmd logInfo;
-    //     archive(cereal::make_nvp("logInfo", logInfo));
-
-    //     _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
-    // }
-    // else if(CmdBase::USER_CHANGE_CMD== childCmdType)
-    // {
-    //     CUserChangeCmd logInfo;
-    //     archive(cereal::make_nvp("logInfo", logInfo));
-
-    //     _nowUseCmdObj=std::make_shared<CUserChangeCmd>(logInfo);
-    // }
-    // else if(CmdBase::FRIEND_SHIP_CHANGE_CMD== childCmdType)
-    // {
-    //     CFriendshipChangeCmd logInfo;
-    //     archive(cereal::make_nvp("logInfo", logInfo));
-
-    //     _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(logInfo);
-    // }
-
-    // _nowUseCmdObj->do_command(_cmdOtlUse);
-    
     return 0;
 }
 

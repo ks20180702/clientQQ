@@ -35,6 +35,8 @@ public:
 
     virtual void reload_recv_obj(std::string cmdStr){};
     
+     virtual void show_do_command_info(){};
+     
     //设置需操作的用户，用户的好友，操作类型
     void set_user(CUser &myUser);
     void set_friend_user(CUser &friendUser);

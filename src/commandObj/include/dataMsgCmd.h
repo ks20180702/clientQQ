@@ -18,6 +18,9 @@ public:
 
     virtual void reload_recv_obj(std::string cmdStr){};
 
+        //显示返回信息
+    virtual void show_do_command_info(){};
+
 private:
     CMsgData _msgData;
 };

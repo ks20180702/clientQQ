@@ -36,6 +36,8 @@ public:
     virtual std::string get_command_obj_json() override;
 
     virtual void reload_recv_obj(std::string cmdStr){};
+
+     virtual void show_do_command_info(){};
     
     //获取和设置用户(获取的并不是同一个)
     void set_operator_user(CUser &operatorUser);

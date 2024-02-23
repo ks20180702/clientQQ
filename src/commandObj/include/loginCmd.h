@@ -33,6 +33,8 @@ public:
     //重新加载接收到的登录指令对象(登录结果，好友，未读消息)
     virtual void reload_recv_obj(std::string cmdStr);
 
+    virtual void show_do_command_info();
+
     // 设置当前的登录对象
     void set_login_user(CUser &loginUser);
 

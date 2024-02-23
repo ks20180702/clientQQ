@@ -26,6 +26,9 @@ public:
     //重新加载接收到的对象(服务器存储有用数据的对象)
     virtual void reload_recv_obj(std::string cmdStr)=0;
 
+    //显示返回信息
+    virtual void show_do_command_info()=0;
+
     enum CmdType
     {
         LOGIN_CMD,
