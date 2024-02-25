@@ -200,7 +200,7 @@ int ClientQQ::param_cmd_str(std::string cmdStr)
 
     // CmdBase::CmdType childCmdType;
 
-	_nowUseCmdObj->reload_recv_obj(cmdStr);
+	_nowUseCmdObj->reload_recv_obj_by_str(cmdStr);
 
     _nowUseCmdObj->show_do_command_info();
     std::cout<<"return mess:"<<_nowUseCmdObj->_childDoCommandReturn<<std::endl;

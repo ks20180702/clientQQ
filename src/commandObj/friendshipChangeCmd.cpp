@@ -36,11 +36,12 @@ int CFriendshipChangeCmd::do_command()
 
 std::string CFriendshipChangeCmd::get_command_obj_json()
 {
-    std::ostringstream ss;
-    cereal::JSONOutputArchive archiveOut(ss);
-    archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
-
-    return ss.str();
+    std::ostringstream ostrStream;
+    cereal::JSONOutputArchive jsonOA(ostrStream);
+    super_json_add_make_nvp(jsonOA,this->_childCmdType);
+    
+    jsonOA(cereal::make_nvp("friendShipInfo", *this));
+    return ostrStream.str();
 }
 
 void CFriendshipChangeCmd::set_user(CUser &myUser)

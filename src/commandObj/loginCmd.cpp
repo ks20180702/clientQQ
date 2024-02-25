@@ -40,18 +40,26 @@ int CLoginCmd::do_command()
 
 std::string CLoginCmd::get_command_obj_json()
 {
-    std::ostringstream ss;
-    cereal::JSONOutputArchive archiveOut(ss);
-    archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
+    std::ostringstream ostrStream;
+    cereal::JSONOutputArchive jsonOA(ostrStream);
+    super_json_add_make_nvp(jsonOA,this->_childCmdType);
+    
+    jsonOA(cereal::make_nvp("logInfo", *this));
 
-    return ss.str();
+    return ostrStream.str();
 }
-void CLoginCmd::reload_recv_obj(std::string cmdStr)
+void CLoginCmd::reload_recv_obj_by_str(std::string cmdStr)
 {
-    std::istringstream iss(cmdStr+"\n}");
-	cereal::JSONInputArchive archive(iss);
-	archive(cereal::make_nvp("logInfo", *this));
+    std::istringstream istrStream(cmdStr+"\n}");
+	cereal::JSONInputArchive jsonIA(istrStream);
+    reload_recv_obj_by_json(jsonIA);
 }
+
+void CLoginCmd::reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) 
+{
+    jsonIA(cereal::make_nvp("logInfo", *this));
+}
+
 void CLoginCmd::show_do_command_info()
 {
     if(!_childDoCommandReturn)

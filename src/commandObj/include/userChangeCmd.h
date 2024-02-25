@@ -35,9 +35,13 @@ public:
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json() override;
 
-    virtual void reload_recv_obj(std::string cmdStr){};
+    //重新加载接收到的对象(服务器存储有用数据的对象)
+    virtual void reload_recv_obj_by_str(std::string cmdStr){};
 
-     virtual void show_do_command_info(){};
+    //重新加载接收到的对象(服务器存储有用数据的对象)
+    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) {};
+
+    virtual void show_do_command_info(){};
     
     //获取和设置用户(获取的并不是同一个)
     void set_operator_user(CUser &operatorUser);

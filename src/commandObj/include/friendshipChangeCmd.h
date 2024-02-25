@@ -33,9 +33,12 @@ public:
 
     virtual std::string get_command_obj_json();
 
-    virtual void reload_recv_obj(std::string cmdStr){};
-    
-     virtual void show_do_command_info(){};
+    virtual void reload_recv_obj_by_str(std::string cmdStr){};
+
+    //重新加载接收到的对象(服务器存储有用数据的对象)
+    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) {};
+
+    virtual void show_do_command_info(){};
      
     //设置需操作的用户，用户的好友，操作类型
     void set_user(CUser &myUser);
