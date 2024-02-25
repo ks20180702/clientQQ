@@ -9,7 +9,10 @@ CmdBase* CmdCreateFactory::create_cmd_ptr(CmdBase::CmdType inputCmdType)
     {
     case(CmdBase::LOGIN_CMD):
         return new CLoginCmd(); 
-    
+    case(CmdBase::USER_CHANGE_CMD):
+        return new CUserChangeCmd(); 
+    case(CmdBase::FRIEND_SHIP_CHANGE_CMD):
+        return new CFriendshipChangeCmd(); 
     default:
         return nullptr;
     }

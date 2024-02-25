@@ -9,7 +9,6 @@ using namespace std;
 #include "loginCmd.h"
 #include "userChangeCmd.h"
 #include "msg.h"
-#include "dataCmd.h"
 
 #include "userNotRecvMsg.h"
 #include "clientQQ.h"

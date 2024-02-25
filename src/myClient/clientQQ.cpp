@@ -116,17 +116,18 @@ int ClientQQ::param_input_cmd(char *inputBuf)
     {
         std::cout<<"[input == 2] run user change "<<std::endl;
 
-        CUser myUser(1,(char*)"141414",(char*)"123456",(char*)"ks_13",23,"","2023-11-29 19:32:00");
+        CUser myUser(1,(char*)"151515",(char*)"123456",(char*)"ks_15",23,"","2023-11-29 19:32:00");
         CUserChangeCmd userChangeCmd;
         userChangeCmd.set_operator_user(myUser);
         //数据库操作修改用户信息好像有点问题，不报错但是没反应
-        userChangeCmd.set_operator_type(CUserChangeCmd::CHANGE_USER);
-        // userChangeCmd.set_operator_type(CUserChangeCmd::ADD_USER);
+        // userChangeCmd.set_operator_type(CUserChangeCmd::CHANGE_USER);
+        userChangeCmd.set_operator_type(CUserChangeCmd::ADD_USER);
 
         cmdJsonStr=userChangeCmd.get_command_obj_json();
 
         send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
 
+        std::cout<<cmdJsonStr.c_str()<<std::endl;
         _nowUseCmdObj=std::make_shared<CUserChangeCmd>(userChangeCmd);
     }
     else if(strcmp(inputBuf,"3")==0)
@@ -198,12 +199,11 @@ int ClientQQ::param_cmd_str(std::string cmdStr)
     std::cout<<cmdStr<<"\n}"<<std::endl;
     std::cout<<"++++++++++++++++++++"<<std::endl;
 
+    //这里也可像服务器端，先获取childCmdType的值，创建对应对象，然后再有cmdStr重新加载该对象
     // CmdBase::CmdType childCmdType;
-
 	_nowUseCmdObj->reload_recv_obj_by_str(cmdStr);
 
     _nowUseCmdObj->show_do_command_info();
-    std::cout<<"return mess:"<<_nowUseCmdObj->_childDoCommandReturn<<std::endl;
 
     return 0;
 }

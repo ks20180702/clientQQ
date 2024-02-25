@@ -19,7 +19,6 @@ set( COMMANDOBJ
     ./commandObj/cmdCreateFactory.cpp
     ./commandObj/loginCmd.cpp
     ./commandObj/userChangeCmd.cpp
-    ./commandObj/dataCmd.cpp
     ./commandObj/friendshipChangeCmd.cpp)
 
 #数据库模块

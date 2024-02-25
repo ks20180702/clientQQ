@@ -25,13 +25,10 @@ public:
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
-    virtual int do_command();
+    virtual int do_command(COtlUse &cmdOtlUse);
     
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
-
-    //重新加载接收到的登录指令对象(登录结果，好友，未读消息)
-    virtual void reload_recv_obj_by_str(std::string cmdStr);
 
     //重新加载接收到的对象(服务器存储有用数据的对象)
     virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA);

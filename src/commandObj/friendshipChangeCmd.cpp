@@ -10,27 +10,30 @@ CFriendshipChangeCmd::CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,Opera
     _friendType=friendType;
     _childCmdType=FRIEND_SHIP_CHANGE_CMD;
 }
-int CFriendshipChangeCmd::do_command()
+int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
 {
     // _childDoCommandReturn=false;
 
     // int dealOperRe=0;
+    // cmdOtlUse.set_user_id_by_account(_myUser);
+    // cmdOtlUse.set_user_id_by_account(_friendUser);
+
     // if(_friendType==DELETT_FRIEND)
     // {
-    //     cmdOtlUse.set_user_id_by_account(_myUser);
-    //     cmdOtlUse.set_user_id_by_account(_friendUser);
     //     dealOperRe=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
     // }
     // else if(_friendType==ADD_FRIEND)
     // {
     //     // dealOperRe=cmdOtlUse
+    //     cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),4);
     // }
 
     // if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
 
     // _childDoCommandReturn=true; //执行结束
 
-    // std::cout<<"do command is succeed"<<std::endl;
+    std::cout<<"do command is succeed"<<std::endl;
+
     return 0;
 }
 
@@ -42,6 +45,35 @@ std::string CFriendshipChangeCmd::get_command_obj_json()
     
     jsonOA(cereal::make_nvp("friendShipInfo", *this));
     return ostrStream.str();
+}
+void CFriendshipChangeCmd::reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) 
+{
+    jsonIA(cereal::make_nvp("friendShipInfo", *this));
+}
+
+void CFriendshipChangeCmd::show_do_command_info()
+{
+    _myUser.print();
+    _friendUser.print();
+    
+    switch (_friendType)
+    {
+    case DELETT_FRIEND:
+        std::cout<<"DELETT_FRIEND = "<<DELETT_FRIEND<<std::endl;
+        break;
+    case ADD_FRIEND:
+        std::cout<<"ADD_FRIEND = "<<ADD_FRIEND<<std::endl;
+        break;
+    case ADD_FRIEND_TO_CLIENT:
+        std::cout<<"ADD_FRIEND_TO_CLIENT = "<<ADD_FRIEND_TO_CLIENT<<std::endl;
+        break;
+    case ADD_FRIEND_TO_SERVER:
+        std::cout<<"ADD_FRIEND_TO_SERVER = "<<ADD_FRIEND_TO_SERVER<<std::endl;
+        break;
+    default:
+        break;
+    }
+
 }
 
 void CFriendshipChangeCmd::set_user(CUser &myUser)

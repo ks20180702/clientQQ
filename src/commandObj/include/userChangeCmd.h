@@ -30,18 +30,15 @@ public:
 
     // 执行用户处理相关命令
     // 错误-1，0增加成功/修改成功
-    virtual int do_command() override;
+    virtual int do_command(COtlUse &cmdOtlUse) override;
     
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json() override;
 
     //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_str(std::string cmdStr){};
+    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) ;
 
-    //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) {};
-
-    virtual void show_do_command_info(){};
+    virtual void show_do_command_info();
     
     //获取和设置用户(获取的并不是同一个)
     void set_operator_user(CUser &operatorUser);
