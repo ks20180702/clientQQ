@@ -44,6 +44,8 @@ set(MAINNAME ser)
 set(MAINFILE main.cpp)
 set(MAINNAME main)
 
+
+
 add_executable(${MAINNAME} ${MAINFILE} ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 
     ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
 # add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 

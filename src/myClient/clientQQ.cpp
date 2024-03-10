@@ -1,8 +1,9 @@
 #include "include/clientQQ.h"
 #include "k_socket_include.h"
 
+#include "k_clip.h"
 ClientQQ::ClientQQ()
-    :_cliSoc(-1){FD_ZERO(&_globalFdset);}
+    :_cliSoc(-1),_cmdStr(""){FD_ZERO(&_globalFdset);}
 int ClientQQ::client_init(char *ipAddr)
 {
 
@@ -34,7 +35,6 @@ int ClientQQ::client_init(char *ipAddr)
 int ClientQQ::select_init()
 {
     FD_ZERO(&_globalFdset);
-    // FD_SET(0,&_globalFdset); //加入标准输入
     FD_SET(_cliSoc,&_globalFdset);
 
     return 0;
@@ -47,9 +47,8 @@ int ClientQQ::run()
     size_t r;
 
     int ndfsNum;
-    int nfdsMax=_cliSoc; //其实客户端这里只有两个，且不会变，这样写只是为了看起来通用
+    int nfdsMax=_cliSoc; //其实客户端这里只有一个，且不会变，这样写只是为了看起来通用
     // int serLen=sizeof(_serAddr);
-
 
     while(1)
     {
@@ -93,6 +92,9 @@ int ClientQQ::run()
 }
 int ClientQQ::param_input_cmd(char *inputBuf)
 {
+    //此处用于和ui界面结合，达到对应功能
+
+
     //将当前的指令对象指向null
     if(nullptr!= _nowUseCmdObj)
     {
@@ -104,7 +106,7 @@ int ClientQQ::param_input_cmd(char *inputBuf)
     {
         std::cout<<"[input == 1] run login "<<std::endl;
 
-        CUser myUser(1,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+        CUser myUser(1,(char*)"123456",(char*)"123456",(char*)"你好",23,"","2023-11-29 19:32:00");
         CLoginCmd logInfo(myUser);
         
         cmdJsonStr=logInfo.get_command_obj_json();
@@ -158,37 +160,15 @@ int ClientQQ::param_input_cmd(char *inputBuf)
 
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
-    //是否开始接收，当接收到开始标志(KS_START)表示开始接收整条语句
-    static bool cmdStrOver=false;
-    static std::string tempStr="";
-
-    if(cmdStrOver==true)
+    // 接收结构体
+    if(strcmp(buf,"KS_START")==0){_cmdStr="";}
+    else if(strcmp(buf,"KS_END")==0)
     {
-        if (strcmp(buf,"KS_END")==0)
-        {
-            std::cout<<"tempStr cmd =  "<<tempStr.length()<<std::endl;
-            param_cmd_str(tempStr);
-
-            cmdStrOver=false;
-            tempStr="";
-        }
-        else
-        {
-            tempStr+=std::string(buf,readNum);
-        }
+        param_cmd_str(Utf8ToGbk(tempStr.c_str()));
     }
     else
     {
-        // 接收结构体
-        if(strcmp(buf,"KS_START")==0)
-        {
-            cmdStrOver=true;
-            tempStr="";
-        }
-        else
-        {
-            std::cout<<"recv from : "<<buf<<std::endl;
-        }
+        tempStr+=std::string(buf,readNum);
     }
     return 0;
 }

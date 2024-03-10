@@ -5,8 +5,7 @@
     执行指令的基类，只可使用基指针，不允许创建
 */
 
-// 【未实现】
-// 暂时的几个指令的 get_next_command 和get_send_command都没实现
+// 
 #include <memory>
 #include "k_total_head.h"
 #include "otlUse.h"
@@ -45,6 +44,10 @@ public:
 
     //显示返回信息(用于查看服务器端执行情况)
     virtual void show_do_command_info()=0;
+
+    //本条指令执行完后，接下来是否需要发送请求到服务器端
+    //发现这个是没必要的，反而会增加复杂度
+    // virtual CmdBase* do_next_cmd()=0;
 
     //由于序列化时必须加入子类子类类型，所以放到父类中
     void super_json_add_make_nvp(cereal::JSONOutputArchive &jsonOA,CmdBase::CmdType inputCmdType ){

@@ -66,6 +66,8 @@ private:
 
     //指向指令对象
     std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;
+
+    std::string  _cmdStr;
 };
 
 
