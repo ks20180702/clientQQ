@@ -1,4 +1,4 @@
-include_directories(../include)
+﻿include_directories(../include)
 
 include_directories(./correspondence/include)
 include_directories(./connectDb/include)
@@ -16,15 +16,10 @@ set( DATAOBJ
 
 #指令模块
 set( COMMANDOBJ 
-    ./commandObj/cmdCreateFactory.cpp
     ./commandObj/loginCmd.cpp
+    ./commandObj/heartRequestCmd.cpp
     ./commandObj/userChangeCmd.cpp
     ./commandObj/friendshipChangeCmd.cpp)
-
-#数据库模块
-# set( CONNECTDB 
-#    ./connectDb/otlUse.cpp)
-    # ./connectDb/conPgsql.cpp)
 
 #客户端模块
 set( MYCLIENT
@@ -33,8 +28,7 @@ set( MYCLIENT
 
 if (MSVC)
     link_directories(${PROJECT_SOURCE_DIR}/libs)
- #   link_directories(${project_source_dir}/libs/psqlodbc)
- #   message(${project_source_dir}/libs/psqlodbc)
+
 elseif(UNIX)
     link_directories("/usr/local/psqlodbc/lib")
 endif()

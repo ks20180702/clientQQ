@@ -64,11 +64,11 @@ void CFriendshipChangeCmd::show_do_command_info()
     case ADD_FRIEND:
         std::cout<<"ADD_FRIEND = "<<ADD_FRIEND<<std::endl;
         break;
-    case ADD_FRIEND_TO_CLIENT:
-        std::cout<<"ADD_FRIEND_TO_CLIENT = "<<ADD_FRIEND_TO_CLIENT<<std::endl;
+    case ADD_FRIEND_YES:
+        std::cout<<"ADD_FRIEND_YES = "<<ADD_FRIEND_YES<<std::endl;
         break;
-    case ADD_FRIEND_TO_SERVER:
-        std::cout<<"ADD_FRIEND_TO_SERVER = "<<ADD_FRIEND_TO_SERVER<<std::endl;
+    case ADD_FRIEND_NO:
+        std::cout<<"ADD_FRIEND_NO = "<<ADD_FRIEND_YES<<std::endl;
         break;
     default:
         break;

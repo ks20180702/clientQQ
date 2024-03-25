@@ -6,6 +6,7 @@
 #include "loginCmd.h"
 #include "userChangeCmd.h"
 #include "friendshipChangeCmd.h"
+#include "heartRequestCmd.h"
 
 #include <vector>
 #include <memory>

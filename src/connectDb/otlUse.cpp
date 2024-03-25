@@ -8,8 +8,11 @@ int COtlUse::olt_init(char *connectStr)
     try{
         if(nullptr ==connectStr)
         {
+            std::cout<<"lock me before"<<std::endl;
             // _db.rlogon("DSN=pgsql;UID=postgres;PWD=123456;database=myQQ"); 
-            _db.rlogon("Driver=PostgreSQL;Servername=192.168.47.135;UserName=postgres;Password=123456;Database=myQQ"); 
+            // _db.rlogon("Driver=PostgreSQL;Servername=192.168.47.135;UserName=postgres;Password=123456;Database=myQQ"); 
+            _db.rlogon("Driver=PostgreSQL;Servername=114.55.229.106;UserName=postgres;Password=123456;Database=myQQ"); 
+            std::cout<<"lock me"<<std::endl;
         }
         else{
             _db.rlogon(connectStr); 
@@ -233,7 +236,6 @@ int COtlUse::change_request_friend_type(int requestUserId,int requestedId,int re
     }
 }
 
-
 int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
 {
     if(_connect_on()==-1) return -1;
@@ -268,6 +270,37 @@ int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
     }
 }
 
+int COtlUse::get_request_users(int id,vector<CUser> &requestUserLists)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[256]={0};
+        char sqlFormat[256]="SELECT u.user_id,u.account,u.user_name,user_age FROM request_friend_table_info as r \
+                            INNER JOIN user_info_table as u on r.request_user_id=u.user_id \
+                                and r.requested_id = %d and r.request_type =1 ";
+
+        sprintf(sqlStr,sqlFormat,id);
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(500, sqlStr,_db); 
+
+        int id;
+        char act[7],name[255];
+        int16_t age;
+        while(!ostream.eof())
+        { 
+            ostream>>id>>act>>name>>age;
+            CUser requestUser(id,act,"",name,age,"","");
+            requestUserLists.push_back(requestUser);
+        }
+        return requestUserLists.size();
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        requestUserLists.clear();
+        return -1;
+    }
+}
 int COtlUse::get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs)
 {
     if(_connect_on()==-1) return -1;

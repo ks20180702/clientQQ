@@ -1,7 +1,6 @@
-#include "include/clientQQ.h"
-#include "k_socket_include.h"
-
+﻿#include "./include/clientQQ.h"
 #include "k_clip.h"
+
 ClientQQ::ClientQQ()
     :_cliSoc(-1),_cmdStr(""){FD_ZERO(&_globalFdset);}
 int ClientQQ::client_init(char *ipAddr)
@@ -52,7 +51,8 @@ int ClientQQ::run()
 
     while(1)
     {
-        scanf("%s",inputDate);
+        // scanf("%s",inputDate);
+        inputDate[0]='1';
         std::cout<<"1 is [loginCmd]"<<std::endl;
         std::cout<<"2 is [CHANGE_USER or add_user]"<<std::endl;
         std::cout<<"3 is [del friendShip or add friendShip ]"<<std::endl;
@@ -87,7 +87,7 @@ int ClientQQ::run()
             }
             if(strcmp(buf,"KS_END")==0){break;} //由于buf在此处还未清空，所以可以用来判断结束
         }  
-
+        break;
     }
 }
 int ClientQQ::param_input_cmd(char *inputBuf)
@@ -150,6 +150,19 @@ int ClientQQ::param_input_cmd(char *inputBuf)
 
         _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(friendShipChange);
     }
+    else if(strcmp(inputBuf,"4")==0)
+    {
+        std::cout<<"[input == 4] heart cmd "<<std::endl;
+
+        CUser currentUser("222222","123456","",0);
+        CHeartRequestCmd heartCmd(currentUser);
+
+        cmdJsonStr=heartCmd.get_command_obj_json();
+
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
+
+        _nowUseCmdObj=std::make_shared<CHeartRequestCmd>(heartCmd);
+    }
     else{
         send_part(inputBuf,sizeof(inputBuf),true);
 
@@ -164,11 +177,11 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     if(strcmp(buf,"KS_START")==0){_cmdStr="";}
     else if(strcmp(buf,"KS_END")==0)
     {
-        param_cmd_str(Utf8ToGbk(tempStr.c_str()));
+        param_cmd_str(Utf8ToGbk(_cmdStr.c_str()));
     }
     else
     {
-        tempStr+=std::string(buf,readNum);
+        _cmdStr+=std::string(buf,readNum);
     }
     return 0;
 }

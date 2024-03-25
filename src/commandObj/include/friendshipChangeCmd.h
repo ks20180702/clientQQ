@@ -19,8 +19,8 @@ public:
     {
         DELETT_FRIEND, //删除好友关系
         ADD_FRIEND,//客户端的好友申请
-        ADD_FRIEND_TO_CLIENT, //增加好友关系申请指令(发送给客户端)
-        ADD_FRIEND_TO_SERVER //好友同意(发送给服务器端)
+        ADD_FRIEND_YES, //同意添加
+        ADD_FRIEND_NO //拒绝添加
     };
 public:
     CFriendshipChangeCmd();

@@ -43,10 +43,6 @@ public:
     // 错误返回-1，成功返回id
     int set_user_id_by_account(CUser &myUser);
 
-    // 获取用户的好友列表
-    // return 好友数量，错误返回-1
-    int get_user_friends(int id,vector<CUser> &friendLists);
-
     // 将该账号的用户修改为输入的值，用户离开后会修改ip为""，并更新离开时间
     // 错误-1，0成功
     int change_user(CUser &needChangeUser);
@@ -67,8 +63,21 @@ public:
     // 错误-1，0成功
     int add_friend_info_by_id(int id,int friendId);
 
+    // 修改数据库中好友请求类型，1，发起，2 好友同意，3 好友拒绝
+    // 错误-1，0成功
     int change_request_friend_type(int requestUserId,int requestedId,int requestType);
 
+    // 获取用户的好友列表
+    // 错误返回-1
+    int get_user_friends(int id,vector<CUser> &friendLists);
+
+    //获取该好友的好友申请列表
+    // 错误返回-1
+    int get_request_users(int id,vector<CUser> &requestUserLists);
+
+    /*
+        用户刚登录成功时，获取离线状态其他好友发起的一起数据
+    */
     // 获取离线后未接收的消息详细数据(包括内容)
     // return 未接收到的消息条数，错误返回-1
     int get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs);
