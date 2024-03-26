@@ -7,9 +7,12 @@
 #include "userChangeCmd.h"
 #include "friendshipChangeCmd.h"
 #include "heartRequestCmd.h"
+#include "cmdCreateFactory.h"
 
 #include <vector>
+#include <list>
 #include <memory>
+#include <thread>
 
 /*
     win下的select不支持将标准输入加入，之前的代码有点不通用，
@@ -24,10 +27,6 @@ public:
     //获取socket，连接指定的ip
     //错误-1，成功0
     int client_init(char *ipAddr);
-
-    //初始化select相关设置
-    //错误-1，0成功
-    int select_init();
 
     //运行程序，启动客户端
     //错误-1，成功则循环等待
@@ -46,10 +45,6 @@ public:
     //错误-1，成功0
     int recv_cmd_part(char *buf,int readNum);
 
-    //解析接收字符串，转成指定的指令对象
-    //错误-1，
-    int param_cmd_str(std::string cmdStr);
-
     char *get_error();
 
     //显示上一个错误的错误详情
@@ -63,10 +58,12 @@ private:
     int _cliSoc;
     struct sockaddr_in _serAddr;
 
-    fd_set _globalFdset;
+    
 
     //指向指令对象
     std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;
+
+    std::list<std::shared_ptr<CmdBase>> _cmdPtrLists;
 
     std::string  _cmdStr;
 };

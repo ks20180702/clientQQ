@@ -36,7 +36,7 @@ public:
     //重新加载接收到的对象(服务器存储有用数据的对象)
     virtual void reload_recv_obj_by_str(std::string cmdStr)
     {    
-        std::istringstream istrStream(cmdStr+"\n}");
+        std::istringstream istrStream(cmdStr+CMD_STR_ADD);
         cereal::JSONInputArchive jsonIA(istrStream);
         this->reload_recv_obj_by_json(jsonIA);
     };

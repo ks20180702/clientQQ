@@ -1,6 +1,7 @@
 .vscode
 bin
 build
+build-src-msvc_2017-Debug
 lib/*
 lib
 libs/*

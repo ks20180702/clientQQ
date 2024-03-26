@@ -22,7 +22,6 @@ int main()
     ClientQQ myCli;
     //myCli.client_init("192.168.47.135");
     myCli.client_init("114.55.229.106");
-    myCli.select_init() ;
 
     myCli.run();
     std::cout << myCli.get_error() << std::endl;

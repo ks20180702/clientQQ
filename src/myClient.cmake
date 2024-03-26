@@ -20,6 +20,7 @@ if(CMAKE_FILE_PATH)
 
     #指令模块
     set( COMMANDOBJ 
+        ${CMAKE_FILE_PATH}/commandObj/cmdCreateFactory.cpp
         ${CMAKE_FILE_PATH}/commandObj/heartRequestCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/loginCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/userChangeCmd.cpp

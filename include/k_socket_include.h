@@ -22,6 +22,6 @@
 #endif
 
 #define SERVER_PORT 7070
-#define SEND_RECV_BUF_SIZE 128//1024
+#define SEND_RECV_BUF_SIZE 1024
 
 #endif
