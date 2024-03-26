@@ -3,9 +3,10 @@
 
 ClientQQ::ClientQQ()
     :_cliSoc(-1),_cmdStr(""){}
+
+
 int ClientQQ::client_init(char *ipAddr)
 {
-
     WSADATA WSAData;
     if (WSAStartup(MAKEWORD(2, 2), &WSAData))
     {
@@ -26,127 +27,42 @@ int ClientQQ::client_init(char *ipAddr)
 
     _serAddr.sin_family=AF_INET;
     _serAddr.sin_port=htons(SERVER_PORT);
-//    inet_pton(AF_INET,ipAddr,&(_serAddr.sin_addr));
     _serAddr.sin_addr.s_addr=inet_addr(ipAddr);
+    //    inet_pton(AF_INET,ipAddr,&(_serAddr.sin_addr));
+
+    std::thread recvThread(&ClientQQ::pthread_recv_data,this,_cliSoc,_serAddr);
+    recvThread.detach();
 
     return 0;
 }
 
-int ClientQQ::run()
+void ClientQQ::pthread_recv_data(const int cliSoc,const struct sockaddr_in serAddr)
 {
     struct timeval timeout={3,0};
-    char buf[SEND_RECV_BUF_SIZE]={0},inputDate[SEND_RECV_BUF_SIZE]={0};
-    size_t r;
-
-    int ndfsNum;
-    int serLen=sizeof(_serAddr);
+    char buf[SEND_RECV_BUF_SIZE]={0};
+    size_t r;int ndfsNum;
+    int serLen=sizeof(serAddr);
     
     //其实客户端这里只有一个，且不会变，这样写只是为了看起来通用
     fd_set globalFdset;
     FD_ZERO(&globalFdset);
+
     while(1)
     {
-        scanf("%s",inputDate);
-        // inputDate[0]='1';
-        std::cout<<"1 is [loginCmd]"<<std::endl;
-        std::cout<<"2 is [CHANGE_USER or add_user]"<<std::endl;
-        std::cout<<"3 is [del friendShip or add friendShip ]"<<std::endl;
-        param_input_cmd(inputDate);
+        FD_SET(cliSoc,&globalFdset); //相当于重新监控该socketid,如果不加，则在清除一遍后不会再监听了
+        if((ndfsNum=select(cliSoc+1,&globalFdset,NULL,NULL,&timeout))<0) {
+            strcpy(_errMsg,"select error ");return ;
+        }
+        if(ndfsNum==0) continue;
 
-        while(1)
-        {
-            FD_SET(_cliSoc,&globalFdset); //相当于重新监控该socketid,如果不加，则在清除一遍后不会再监听了
-            if((ndfsNum=select(_cliSoc+1,&globalFdset,NULL,NULL,&timeout))<0) {
-                strcpy(_errMsg,"select error ");return -1;
-            }
-            if(ndfsNum==0) continue;
+        // FD_CLR(_cliSoc,&globalFdset); //待测试，应该可以删除的
+        memset(buf,0,SEND_RECV_BUF_SIZE);
+        r=recvfrom(cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&serAddr,&serLen);
+        if(r<0) {strcpy(_errMsg,"recvfrom error "); return ;}
 
-            // FD_CLR(_cliSoc,&globalFdset); //代测试，应该可以删除的
-            memset(buf,0,SEND_RECV_BUF_SIZE);
-            r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&_serAddr,&serLen);
-            if(r<0) {strcpy(_errMsg,"recvfrom error "); return -1;}
-
-            recv_cmd_part(buf,r);
-        }  
-        break;
-    }
+        recv_cmd_part(buf,r);
+    }  
 }
-int ClientQQ::param_input_cmd(char *inputBuf)
-{
-    //将当前的指令对象指向null
-    if(nullptr!= _nowUseCmdObj)
-    {
-        _nowUseCmdObj=nullptr;
-    }
-
-    std::string cmdJsonStr;
-    if(strcmp(inputBuf,"1")==0)
-    {
-        std::cout<<"[input == 1] run login "<<std::endl;
-
-        CUser myUser(1,"123456","123456","",23,"","2023-11-29 19:32:00");
-        CLoginCmd logInfo(myUser);
-        
-        cmdJsonStr=logInfo.get_command_obj_json();
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-
-        _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
-    }
-    else if(strcmp(inputBuf,"2")==0)
-    {
-        std::cout<<"[input == 2] run user change "<<std::endl;
-
-        CUser myUser(1,(char*)"151515",(char*)"123456",(char*)"ks_15",23,"","2023-11-29 19:32:00");
-        CUserChangeCmd userChangeCmd;
-        userChangeCmd.set_operator_user(myUser);
-        //数据库操作修改用户信息好像有点问题，不报错但是没反应
-        // userChangeCmd.set_operator_type(CUserChangeCmd::CHANGE_USER);
-        userChangeCmd.set_operator_type(CUserChangeCmd::ADD_USER);
-
-        cmdJsonStr=userChangeCmd.get_command_obj_json();
-
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-
-        std::cout<<cmdJsonStr.c_str()<<std::endl;
-        _nowUseCmdObj=std::make_shared<CUserChangeCmd>(userChangeCmd);
-    }
-    else if(strcmp(inputBuf,"3")==0)
-    {
-        std::cout<<"[input == 3] run user change "<<std::endl;
-
-        CUser user1((char*)"141414",(char*)"123456",(char*)"ks_14",23);
-        CUser userFriend((char*)"131313",(char*)"123456",(char*)"ks_13",23);
-        CFriendshipChangeCmd friendShipChange;
-
-        friendShipChange.set_user(user1);
-        friendShipChange.set_friend_user(userFriend);
-        friendShipChange.set_operator_type(CFriendshipChangeCmd::DELETT_FRIEND);
-
-        cmdJsonStr=friendShipChange.get_command_obj_json();
-
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-
-        _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(friendShipChange);
-    }
-    else if(strcmp(inputBuf,"4")==0)
-    {
-        std::cout<<"[input == 4] heart cmd "<<std::endl;
-
-        CUser currentUser("222222","123456","",0);
-        CHeartRequestCmd heartCmd(currentUser);
-
-        cmdJsonStr=heartCmd.get_command_obj_json();
-
-        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
-
-        _nowUseCmdObj=std::make_shared<CHeartRequestCmd>(heartCmd);
-    }
-    else{
-        send_part(inputBuf,sizeof(inputBuf),true);
-    }
-    return 0;
-}
-
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
     // 接收结构体
@@ -161,9 +77,13 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
         cereal::JSONInputArchive jsonIA(istrStream);
         jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
+        //为对应的指针对象初始化
         std::shared_ptr<CmdBase> useCmdObj=shared_ptr<CmdBase>(factoryCreater->create_cmd_ptr(childCmdType));
         useCmdObj->reload_recv_obj_by_json(jsonIA);      
         useCmdObj->show_do_command_info();
+
+        //加入到待查看指令中(主要为带聊天记录的数据指令)
+        _cmdPtrLists.push_front(useCmdObj);
  
         _cmdStr="";
     }
@@ -172,19 +92,66 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     return 0;
 }
 
-int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
+int ClientQQ::send_login_cmd(CUser &loginUser)
 {
-    size_t w;
-    char *sendTemp=sendStr;
-    std::cout<<sendStr<<std::endl;
-    int nowNum=0,sendLen;
+    // CUser loginUser(1,"123456","123456","",23,"","2023-11-29 19:32:00");
     
+    std::string cmdJsonStr;
+    CLoginCmd logInfo(loginUser);
+    
+    cmdJsonStr=logInfo.get_command_obj_json();
+    return send_main_part(cmdJsonStr,cmdJsonStr.length());
+}
+int ClientQQ::send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType)
+{
+    // CUser myUser(1,(char*)"151515",(char*)"123456",(char*)"ks_15",23,"","2023-11-29 19:32:00");
+
+    std::string cmdJsonStr;
+
+    CUserChangeCmd userChangeCmd;
+    userChangeCmd.set_operator_user(myUser);
+    userChangeCmd.set_operator_type(operType); //CUserChangeCmd::CHANGE_USER/ADD_USER
+
+    cmdJsonStr=userChangeCmd.get_command_obj_json();
+
+    return send_main_part(cmdJsonStr,cmdJsonStr.length());
+}
+int ClientQQ::send_friendship_change_cmd(CUser &myUser,CUser &userFriend,CFriendshipChangeCmd::OperatorFriendShipType shipOperType)
+{
+    // CUser user1((char*)"141414",(char*)"123456",(char*)"ks_14",23);
+    // CUser userFriend((char*)"131313",(char*)"123456",(char*)"ks_13",23);
+
+    std::string cmdJsonStr;
+    CFriendshipChangeCmd friendShipChange;
+
+    friendShipChange.set_user(myUser);
+    friendShipChange.set_friend_user(userFriend);
+    friendShipChange.set_operator_type(shipOperType);
+
+    cmdJsonStr=friendShipChange.get_command_obj_json();
+
+    return send_main_part(cmdJsonStr,cmdJsonStr.length());
+}
+int ClientQQ::send_heart_cmd(CUser &currentUser)
+{
+    // CUser currentUser("222222","123456","",0);
+
+    std::string cmdJsonStr;
+
+    CHeartRequestCmd heartCmd(currentUser);
+    cmdJsonStr=heartCmd.get_command_obj_json();
+    return send_main_part(cmdJsonStr,cmdJsonStr.length());
+}
+int ClientQQ::send_main_part(std::string &cmdJsonStr,int n)
+{
+    size_t w;   
+    int nowNum=0,sendLen;
+    char *sendTemp=(char *)(cmdJsonStr.c_str());
+
     //有一个问题，先发送的数据不一定先到达
-    if(isCmd==true)
-    {
-        w=sendto(_cliSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
-        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-    }
+    //发送开始标记
+    w=sendto(_cliSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+    if(w<0) {strcpy(_errMsg,"send error"); return -1;}
     Sleep(50); 
 
     //发送指定字节流
@@ -195,15 +162,16 @@ int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
         else{sendLen=n-nowNum;}
 
         w=sendto(_cliSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+        Sleep(50);
         if(w<0) {strcpy(_errMsg,"send error"); return -1;}
 
         nowNum+=w;
     }
-    if(isCmd==true)
-    {
-        w=sendto(_cliSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
-        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-    }
+
+    //发送结束标记
+    w=sendto(_cliSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+    if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
 
     return 0;
 }

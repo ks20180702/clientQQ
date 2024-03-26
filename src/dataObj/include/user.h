@@ -1,4 +1,4 @@
-#ifndef __USER_H__
+﻿#ifndef __USER_H__
 #define __USER_H__
 #include <k_total_head.h>
 #include "dataBase.h"
@@ -25,11 +25,12 @@ public:
         char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime);
     //加入新用户时调用，其他时候不要使用该构造
     CUser(char *account,char *password,char* userName,int16_t userAge);
+    CUser(std::string account,std::string password,std::string userName,int16_t userAge);
     CUser(const CUser &other);
 
     //为用户设置对应的值
-    void set_user_info(int userId,char *account,char *password,
-        char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime);
+    void set_user_info(const int userId,const char *account,const char *password,
+        const char* userName,const int16_t userAge,const char *currentIp,const char *lastLeaveTime);
     // 用account(账号)来判断是否相等
     bool operator==(const CUser &other);
     CUser &operator=(const CUser &other);

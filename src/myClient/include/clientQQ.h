@@ -28,18 +28,19 @@ public:
     //错误-1，成功0
     int client_init(char *ipAddr);
 
-    //运行程序，启动客户端
-    //错误-1，成功则循环等待
-    int run();
+    //接收线程函数，用户接收服务器端发送过来的数据
+    void pthread_recv_data(const int cliSoc,const struct sockaddr_in serAddr);
 
-    //解析输入的字符串命令，1登录...
-    //返回：错误-1
-    int param_input_cmd(char *inputBuf);
-
-    //分批发送数据，暂定1024
-    //错误-1，成功0
-    // isCmd 是否发送为指令类，是则会自动增加前后关键字符
-    int send_part(char *sendStr,int n,bool isCmd=true);
+    //发送登录指令//错误-1，成功0
+    int send_login_cmd(CUser &loginUser);
+    //发送用户信息修改指令//错误-1，成功0
+    int send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType);
+    //发送好友关系修改指令//错误-1，成功0
+    int send_friendship_change_cmd(CUser &myUser,CUser &userFriend,CFriendshipChangeCmd::OperatorFriendShipType shipOperType);
+    //发送心跳包指令//错误-1，成功0
+    int send_heart_cmd(CUser &currentUser);
+    //分批发送数据，暂定1024//错误-1，成功0
+    int send_main_part(std::string &cmdJsonStr,int n);
 
     //按指定协议分批接收数据
     //错误-1，成功0
@@ -55,10 +56,7 @@ public:
 private:
     char _errMsg[128]="OK";
 
-    int _cliSoc;
-    struct sockaddr_in _serAddr;
-
-    
+    int _cliSoc;struct sockaddr_in _serAddr;
 
     //指向指令对象
     std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;

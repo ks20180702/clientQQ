@@ -1,4 +1,4 @@
-#include "./include/user.h"
+﻿#include "./include/user.h"
 
 
 CUser::CUser()
@@ -14,13 +14,17 @@ CUser::CUser(char *account,char *password,char* userName,int16_t userAge)
 {
     this->set_user_info(0,account,password,userName,userAge,"","");
 }
+CUser::CUser(std::string account,std::string password,std::string userName,int16_t userAge)
+{
+    this->set_user_info(0,account.c_str(),password.c_str(),userName.c_str(),userAge,"","");
+}
 CUser::CUser(const CUser &other)
 {
     *this=other;
 }
 
-void CUser::set_user_info(int userId,char *account,char *password,
-    char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime)
+void CUser::set_user_info(const int userId,const char *account,const char *password,
+    const char* userName,const int16_t userAge,const char *currentIp,const char *lastLeaveTime)
 {
     //此处需加一个长度检查
     _userId=userId;
