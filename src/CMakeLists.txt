@@ -27,6 +27,10 @@ set( MYCLIENT
     ./myClient/clientQQ.cpp)
 
 
+set(OTHER
+    ../include/srcInclude/k_clip.cpp
+)
+
 if (MSVC)
     link_directories(${PROJECT_SOURCE_DIR}/libs)
 
@@ -34,17 +38,10 @@ elseif(UNIX)
     link_directories("/usr/local/psqlodbc/lib")
 endif()
 
-set(MAINFILE demoServer.cpp)
-set(MAINNAME ser)
 set(MAINFILE main.cpp)
 set(MAINNAME main)
 
-
-
-add_executable(${MAINNAME} ${MAINFILE} ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 
-    ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
-# add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 
-#     ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
+add_executable(${MAINNAME} ${MAINFILE} ${COMMANDOBJ} ${DATAOBJ} ${MYCLIENT} ${OTHER})
 
 if (MSVC)
 #    set(pgodbc_path ${PROJECT_SOURCE_DIR}/libs/psqlodbc)

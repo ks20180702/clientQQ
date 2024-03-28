@@ -1,23 +1,25 @@
 ﻿#include "./include/clientQQ.h"
 #include "k_clip.h"
 
+// extern string Utf8ToGbk(const char *src_str);
+
 ClientQQ::ClientQQ()
     :_cliSoc(-1),_cmdStr(""){}
 
 
-int ClientQQ::client_init(char *ipAddr)
+int ClientQQ::client_init(const char *ipAddr)
 {
     WSADATA WSAData;
     if (WSAStartup(MAKEWORD(2, 2), &WSAData))
     {
-        printf("initializationing error!\n");
+        strcpy(_errMsg,"initializationing error!\n");
         WSACleanup();
         return -1;
     }
 
     if ((_cliSoc = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
-        printf("创建套接字失败!\n");
+        strcpy(_errMsg,"创建套接字失败!\n");
         WSACleanup();
         return -1;
     }
@@ -73,7 +75,7 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
 
         //设置childCmdType
         CmdBase::CmdType childCmdType;
-        std::istringstream istrStream(Utf8ToGbk(_cmdStr.c_str())+CMD_STR_ADD);
+        std::istringstream istrStream(_cmdStr+CMD_STR_ADD);
         cereal::JSONInputArchive jsonIA(istrStream);
         jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
@@ -176,6 +178,10 @@ int ClientQQ::send_main_part(std::string &cmdJsonStr,int n)
     return 0;
 }
 
+std::list<std::shared_ptr<CmdBase>>& ClientQQ::get_cmd_ptr_lists()
+{  
+   return _cmdPtrLists; 
+}
 char *ClientQQ::get_error()
 {
     return (char*)_errMsg;

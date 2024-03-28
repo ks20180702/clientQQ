@@ -26,6 +26,7 @@ public:
     //加入新用户时调用，其他时候不要使用该构造
     CUser(char *account,char *password,char* userName,int16_t userAge);
     CUser(std::string account,std::string password,std::string userName,int16_t userAge);
+    CUser(std::string account,std::string password);
     CUser(const CUser &other);
 
     //为用户设置对应的值

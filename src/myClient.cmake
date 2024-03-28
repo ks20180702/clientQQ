@@ -30,8 +30,12 @@ if(CMAKE_FILE_PATH)
     set( MYCLIENT
         ${CMAKE_FILE_PATH}/myClient/clientQQ.cpp)
 
+    set(OTHER
+        ${CMAKE_FILE_PATH}/../include/srcInclude/k_clip.cpp
+        ${CMAKE_FILE_PATH}/../include/srcInclude/qt_clip.cpp)
+
     #将需要的包设置给CLIENT
-    set(CLIENT ${COMMANDOBJ} ${DATAOBJ} ${MYCLIENT})
+    set(CLIENT ${COMMANDOBJ} ${DATAOBJ} ${MYCLIENT} ${OTHER})
 
 else()
     message("not set CMAKE_FILE_PATH")

@@ -18,6 +18,10 @@ CUser::CUser(std::string account,std::string password,std::string userName,int16
 {
     this->set_user_info(0,account.c_str(),password.c_str(),userName.c_str(),userAge,"","");
 }
+CUser::CUser(std::string account,std::string password)
+{
+    this->set_user_info(0,account.c_str(),password.c_str(),"",0,"","");
+}
 CUser::CUser(const CUser &other)
 {
     *this=other;

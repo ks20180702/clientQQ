@@ -21,7 +21,7 @@ int main()
 
     ClientQQ myCli;
     //myCli.client_init("192.168.47.135");
-    myCli.client_init("114.55.229.106");
+    myCli.client_init(SERVER_ADDR);
     
     // //登录指令测试
     // CUser loginUser(1,"123456","123456","",23,"","2023-11-29 19:32:00");

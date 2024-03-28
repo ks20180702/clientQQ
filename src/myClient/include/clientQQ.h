@@ -26,7 +26,7 @@ public:
 
     //获取socket，连接指定的ip
     //错误-1，成功0
-    int client_init(char *ipAddr);
+    int client_init(const char *ipAddr);
 
     //接收线程函数，用户接收服务器端发送过来的数据
     void pthread_recv_data(const int cliSoc,const struct sockaddr_in serAddr);
@@ -46,6 +46,9 @@ public:
     //错误-1，成功0
     int recv_cmd_part(char *buf,int readNum);
 
+    //返回当前未处理的指令对象
+    std::list<std::shared_ptr<CmdBase>>& get_cmd_ptr_lists();
+
     char *get_error();
 
     //显示上一个错误的错误详情
@@ -58,9 +61,9 @@ private:
 
     int _cliSoc;struct sockaddr_in _serAddr;
 
-    //指向指令对象
-    std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;
-
+    //这里可能需要再增加一个一样的list,并增加锁，防止一边遍历一边增加指令指针。
+    //等后面处理聊天数据的时候再增加
+    //指向指令对象的list
     std::list<std::shared_ptr<CmdBase>> _cmdPtrLists;
 
     std::string  _cmdStr;
