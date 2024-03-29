@@ -32,13 +32,13 @@ int ClientQQ::client_init(const char *ipAddr)
     _serAddr.sin_addr.s_addr=inet_addr(ipAddr);
     //    inet_pton(AF_INET,ipAddr,&(_serAddr.sin_addr));
 
-    std::thread recvThread(&ClientQQ::pthread_recv_data,this,_cliSoc,_serAddr);
+    std::thread recvThread(&ClientQQ::thread_recv_data,this,_cliSoc,_serAddr);
     recvThread.detach();
 
     return 0;
 }
 
-void ClientQQ::pthread_recv_data(const int cliSoc,const struct sockaddr_in serAddr)
+void ClientQQ::thread_recv_data(const int cliSoc,const struct sockaddr_in serAddr)
 {
     struct timeval timeout={3,0};
     char buf[SEND_RECV_BUF_SIZE]={0};
@@ -65,6 +65,7 @@ void ClientQQ::pthread_recv_data(const int cliSoc,const struct sockaddr_in serAd
         recv_cmd_part(buf,r);
     }  
 }
+
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
     // 接收结构体
@@ -82,7 +83,7 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
         //为对应的指针对象初始化
         std::shared_ptr<CmdBase> useCmdObj=shared_ptr<CmdBase>(factoryCreater->create_cmd_ptr(childCmdType));
         useCmdObj->reload_recv_obj_by_json(jsonIA);      
-        useCmdObj->show_do_command_info();
+        // useCmdObj->show_do_command_info();
 
         //加入到待查看指令中(主要为带聊天记录的数据指令)
         _cmdPtrLists.push_front(useCmdObj);
@@ -92,6 +93,22 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     //这里稍微有个问题就是，一直接收不到KS_START,但一直接收数据，导致字符串过大。待后续处理
     else{_cmdStr+=std::string(buf,readNum);} 
     return 0;
+}
+
+
+void ClientQQ::heart_thread_init(CUser &currentUser)
+{
+    std::thread heartThread(&ClientQQ::thread_send_heart_cmd,this,currentUser);
+    heartThread.detach();
+}
+void ClientQQ::thread_send_heart_cmd(CUser &currentUser)
+{
+    while(1)
+    {
+        Sleep(2000);
+        send_heart_cmd(currentUser);
+        Sleep(8000);
+    }
 }
 
 int ClientQQ::send_login_cmd(CUser &loginUser)

@@ -69,7 +69,6 @@ private:
     //当前用于登录的对象
     CUser _loginUser;
 
-//可以考虑不作为成员变量
     //当前用户的好友信息
     std::vector<CUser> _friendLists;
 

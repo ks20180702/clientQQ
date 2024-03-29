@@ -29,7 +29,14 @@ public:
     int client_init(const char *ipAddr);
 
     //接收线程函数，用户接收服务器端发送过来的数据
-    void pthread_recv_data(const int cliSoc,const struct sockaddr_in serAddr);
+    void thread_recv_data(const int cliSoc,const struct sockaddr_in serAddr);
+    //按指定协议分批接收数据
+    //错误-1，成功0
+    int recv_cmd_part(char *buf,int readNum);
+
+    //发送心跳包的线程，暂定10秒发送一次。(传的是引用，所以若用户修改密码后，还是没问题，可以正确验证的)
+    void heart_thread_init(CUser &currentUser);
+    void thread_send_heart_cmd(CUser &currentUser);
 
     //发送登录指令//错误-1，成功0
     int send_login_cmd(CUser &loginUser);
@@ -42,9 +49,7 @@ public:
     //分批发送数据，暂定1024//错误-1，成功0
     int send_main_part(std::string &cmdJsonStr,int n);
 
-    //按指定协议分批接收数据
-    //错误-1，成功0
-    int recv_cmd_part(char *buf,int readNum);
+
 
     //返回当前未处理的指令对象
     std::list<std::shared_ptr<CmdBase>>& get_cmd_ptr_lists();
