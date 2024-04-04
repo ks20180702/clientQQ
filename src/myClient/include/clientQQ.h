@@ -40,6 +40,8 @@ public:
 
     //发送登录指令//错误-1，成功0
     int send_login_cmd(CUser &loginUser);
+    //发送登录指令//错误-1，成功0
+    int send_data_msg_cmd(Cuser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType);
     //发送用户信息修改指令//错误-1，成功0
     int send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType);
     //发送好友关系修改指令//错误-1，成功0

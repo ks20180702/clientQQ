@@ -105,9 +105,9 @@ void ClientQQ::thread_send_heart_cmd(CUser &currentUser)
 {
     while(1)
     {
-        Sleep(2000);
+        Sleep(12000);
         send_heart_cmd(currentUser);
-        Sleep(8000);
+        Sleep(18000);
     }
 }
 
@@ -119,6 +119,18 @@ int ClientQQ::send_login_cmd(CUser &loginUser)
     CLoginCmd logInfo(loginUser);
     
     cmdJsonStr=logInfo.get_command_obj_json();
+    return send_main_part(cmdJsonStr,cmdJsonStr.length());
+}
+int ClientQQ::send_data_msg_cmd(Cuser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType)
+{
+    // CUser recvUser("123456","123456","",0); //这个用户的id其实就是1
+    // CMsg testMsg(2,1,"","");
+
+    std::string cmdJsonStr;
+    CDataMsgCmd dataMsgCmd(recvUser,dataMsg);
+    dataMsgCmd.set_msg_request_type(requestType);
+
+    cmdJsonStr=dataMsgCmd.get_command_obj_json();
     return send_main_part(cmdJsonStr,cmdJsonStr.length());
 }
 int ClientQQ::send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType)
