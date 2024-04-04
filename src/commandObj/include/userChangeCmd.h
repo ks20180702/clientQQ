@@ -28,9 +28,11 @@ public:
     CUserChangeCmd();
     ~CUserChangeCmd() override;
 
+#ifdef SERVER_PROGRAM
     // 执行用户处理相关命令
     // 错误-1，0增加成功/修改成功
-    virtual int do_command(COtlUse &cmdOtlUse) override;
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account) override;
+#endif
     
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json() override;

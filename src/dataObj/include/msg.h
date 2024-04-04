@@ -1,7 +1,6 @@
 #ifndef __MSG_H__
 #define __MSG_H__
 #include <k_total_head.h>
-#include "dataBase.h"
 
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
@@ -11,7 +10,7 @@
     by ks 2023-11-26
     move to dataObj in 2023-12-4
 */
-class CMsg:public CDataBase
+class CMsg
 {
 
 public:

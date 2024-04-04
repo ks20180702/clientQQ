@@ -10,32 +10,40 @@ CFriendshipChangeCmd::CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,Opera
     _friendType=friendType;
     _childCmdType=FRIEND_SHIP_CHANGE_CMD;
 }
-int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
-{
-    // _childDoCommandReturn=false;
 
-    // int dealOperRe=0;
-    // cmdOtlUse.set_user_id_by_account(_myUser);
-    // cmdOtlUse.set_user_id_by_account(_friendUser);
+#ifdef SERVER_PROGRAM
+    CmdBase::DoCommandReturnType CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    {
+        _childDoCommandReturn=false;
 
-    // if(_friendType==DELETT_FRIEND)
-    // {
-    //     dealOperRe=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
-    // }
-    // else if(_friendType==ADD_FRIEND)
-    // {
-    //     // dealOperRe=cmdOtlUse
-    //     cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),4);
-    // }
+        int operatorReturn=0;
+        int addType=-1;
+        cmdOtlUse.set_user_id_by_account(_myUser);
+        cmdOtlUse.set_user_id_by_account(_friendUser);
 
-    // if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+        switch (_friendType)
+        {
+        //删除好友
+        case DELETT_FRIEND:
+            operatorReturn=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
+            break;
+        //发起好友申请
+        case ADD_FRIEND:
+        case ADD_FRIEND_YES:
+        case ADD_FRIEND_NO:
+            addType=static_cast<int>(_friendType);
+            operatorReturn=cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),addType);
+            break;
+        default:
+            break;
+        }
 
-    // _childDoCommandReturn=true; //执行结束
+        if(operatorReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
 
-    std::cout<<"do command is succeed"<<std::endl;
-
-    return 0;
-}
+        _childDoCommandReturn=true; //执行结束
+        return NORMAL_CMD;
+    }
+#endif
 
 std::string CFriendshipChangeCmd::get_command_obj_json()
 {

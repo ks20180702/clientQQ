@@ -1,5 +1,5 @@
-#ifndef __LOGINCMD_H
-#define __LOGINCMD_H
+#ifndef __LOGINCMD_H__
+#define __LOGINCMD_H__
 
 /*
     实现登录命令
@@ -22,11 +22,13 @@ public:
     CLoginCmd(CUser &loginUser);
     ~CLoginCmd();
 
+#ifdef SERVER_PROGRAM
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
-    virtual int do_command(COtlUse &cmdOtlUse);
-    
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
+#endif
+ 
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
 
@@ -69,6 +71,7 @@ private:
     //当前用于登录的对象
     CUser _loginUser;
 
+//可以考虑不作为成员变量
     //当前用户的好友信息
     std::vector<CUser> _friendLists;
 

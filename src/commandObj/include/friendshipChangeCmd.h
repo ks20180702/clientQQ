@@ -5,7 +5,10 @@
 #include "user.h"
 #include "msg.h"
 
-
+#include <sstream>
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
 /*
     实现好友关系修改命令
     1.删除好友关系
@@ -27,9 +30,11 @@ public:
     CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,OperatorFriendShipType friendType);
     ~CFriendshipChangeCmd() override;
 
+#ifdef SERVER_PROGRAM
     // 执行好友关系处理相关命令
     // 错误-1，0增加成功/修改成功
-    virtual int do_command(COtlUse &cmdOtlUse);
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
+#endif
 
     virtual std::string get_command_obj_json();
 

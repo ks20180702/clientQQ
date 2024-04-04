@@ -1,10 +1,4 @@
 #include "./include/msg.h"
-#include <stdio.h>
-#include <locale>
-#include <codecvt>
-#include <iostream>
-
-// #include "k_clip.h"
 
 CMsg::CMsg()
     :_sendId(0),_recvId(0),_msgDateTime(""),_content("")
@@ -64,13 +58,11 @@ char *CMsg::get_content() const
 {
     return (char*)(_content.c_str());
 }
-
 void CMsg::print()
 {
     std::cout<<"send id = "<<this->get_send_id();
     std::cout<<"; recv id = "<<this->get_recv_id();
     std::cout<<"; msg datetime  = "<<this->get_msg_dt();
-    // std::cout<<"; content  = "<<Utf8ToGbk(_content.c_str());
     std::cout<<"; content = "<<this->get_content()<<std::endl;
 }
 

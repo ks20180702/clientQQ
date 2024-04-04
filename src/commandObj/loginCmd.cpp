@@ -7,37 +7,41 @@ CLoginCmd::CLoginCmd(CUser &loginUser)
 {
     _loginUser=loginUser;
     _childCmdType=LOGIN_CMD;
-}  
-int CLoginCmd::do_command(COtlUse &cmdOtlUse)
-{
-    // _childDoCommandReturn=false; //开始时，执行成功标记设置为false
+} 
 
-    // int existRe,friendNumRe,notRevcMsgNumRe;
+#ifdef SERVER_PROGRAM
+    CmdBase::DoCommandReturnType CLoginCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    {
+        _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
-    // _loginUser.print();
+        int existRe,friendNumRe,notRevcMsgNumRe;
 
-    // // 1.检查用户账号密码，
-    // existRe=cmdOtlUse.select_user_exist(_loginUser);
-    // if(existRe!=0) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+        _loginUser.print();
 
-    // // 使用户的id与account保持一致(测试时自己手动创建用户，可能会不一致)，正式不会这样
-    // if(cmdOtlUse.set_user_id_by_account(_loginUser)==-1) 
-    // {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+        // 1.检查用户账号密码，
+        existRe=cmdOtlUse.select_user_exist(_loginUser);
+        if(existRe!=0) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
 
-    // // 2.获取该用户的好友数据
-    // friendNumRe=cmdOtlUse.get_user_friends(_loginUser.get_id(),_friendLists);
-    // if(friendNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
-    // std::cout<<"[I]  user have friend num = "<<friendNumRe<<std::endl;
+        // 使用户的id与account保持一致(测试时自己手动创建用户，可能会不一致)，正式不会这样
+        if(cmdOtlUse.set_user_id_by_account(_loginUser)==-1) 
+        {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
 
-    // // 3.获取消息未接收情况
-    // notRevcMsgNumRe=cmdOtlUse.get_not_recv_msg(_loginUser.get_id(),_notRecvMsgsLists);
-    // if(notRevcMsgNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
-    // std::cout<<"[I]  user have no recv msg num = "<<notRevcMsgNumRe<<std::endl;
-    
-    // // 4.发送用户成功消息+好友信息+为接收的信息数量(不加内容)
-    // _childDoCommandReturn=true;
-    return 0;
-}
+        // 2.获取该用户的好友数据
+        friendNumRe=cmdOtlUse.get_user_friends(_loginUser.get_id(),_friendLists);
+        if(friendNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+        std::cout<<"[I]  user have friend num = "<<friendNumRe<<std::endl;
+
+        // 3.获取消息未接收情况
+        notRevcMsgNumRe=cmdOtlUse.get_not_recv_msg(_loginUser.get_id(),_notRecvMsgsLists);
+        if(notRevcMsgNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+        std::cout<<"[I]  user have no recv msg num = "<<notRevcMsgNumRe<<std::endl;
+        
+        //获取当前用户的账号
+        account=_loginUser.get_account();
+        _childDoCommandReturn=true;
+        return NEW_LOGIN_CMD;
+    }
+#endif
 
 std::string CLoginCmd::get_command_obj_json()
 {

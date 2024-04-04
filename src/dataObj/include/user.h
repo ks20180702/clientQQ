@@ -1,7 +1,6 @@
-﻿#ifndef __USER_H__
+#ifndef __USER_H__
 #define __USER_H__
 #include <k_total_head.h>
-#include "dataBase.h"
 
 
 #include <cereal/archives/json.hpp>
@@ -16,7 +15,7 @@
     move to dataObj in 2023-12-4
 
 */
-class CUser:public CDataBase
+class CUser
 {
 public:
     CUser();

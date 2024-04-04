@@ -1,4 +1,4 @@
-﻿#include "./include/user.h"
+#include "./include/user.h"
 
 
 CUser::CUser()
