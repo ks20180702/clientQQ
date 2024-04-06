@@ -23,6 +23,8 @@ CDataMsgCmd::CDataMsgCmd(CUser &recvUser,CMsg &msgData)
             executeReturn=cmdOtlUse.set_msg_read_over(_msgData.get_recv_id(),_msgData.get_send_id());
             if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
             std::cout<<"[MSG_CONFIRM]  is over"<<std::endl;
+
+            _childDoCommandReturn=true;
             return NO_SEND_CMD;
         }
         else if(MSG_SEND==_requestType)
@@ -34,10 +36,10 @@ CDataMsgCmd::CDataMsgCmd(CUser &recvUser,CMsg &msgData)
 
             std::cout<<"[MSG_SEND]  is over"<<std::endl;
 
+            _childDoCommandReturn=true;
             return RE_TREANSMISSION_CMD;
         }
 
-        _childDoCommandReturn=true;
         return NORMAL_CMD;
     }
 #endif

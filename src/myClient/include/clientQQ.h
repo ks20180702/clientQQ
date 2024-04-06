@@ -1,18 +1,28 @@
-#ifndef __CLIENTQQ_H__
+﻿#ifndef __CLIENTQQ_H__
 #define __CLIENTQQ_H__
 
 #include "k_socket_include.h"
 #include "k_total_head.h"
 #include "loginCmd.h"
 #include "userChangeCmd.h"
+#include "dataMsgCmd.h"
 #include "friendshipChangeCmd.h"
 #include "heartRequestCmd.h"
 #include "cmdCreateFactory.h"
+
+
 
 #include <vector>
 #include <list>
 #include <memory>
 #include <thread>
+
+
+#include <mutex>                // 包含互斥锁的头文件
+#include <condition_variable>   // 包含条件变量的头文件
+
+std::mutex mtx;                 // 定义互斥锁对象 mtx
+std::condition_variable cv;     // 定义条件变量对象 cv
 
 /*
     win下的select不支持将标准输入加入，之前的代码有点不通用，
@@ -41,7 +51,7 @@ public:
     //发送登录指令//错误-1，成功0
     int send_login_cmd(CUser &loginUser);
     //发送登录指令//错误-1，成功0
-    int send_data_msg_cmd(Cuser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType);
+    int send_data_msg_cmd(CUser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType);
     //发送用户信息修改指令//错误-1，成功0
     int send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType);
     //发送好友关系修改指令//错误-1，成功0
@@ -68,10 +78,10 @@ private:
 
     int _cliSoc;struct sockaddr_in _serAddr;
 
-    //这里可能需要再增加一个一样的list,并增加锁，防止一边遍历一边增加指令指针。
-    //等后面处理聊天数据的时候再增加
-    //指向指令对象的list
+    //可以增加一个一样的list,当锁住的时候，recvfrom回接收不到指令，导致有漏的，相当于有个缓冲，这个暂时不想加(漏就漏了)
+    //指向指令对象的list，带锁的(防止一边遍历一边增加数据)
     std::list<std::shared_ptr<CmdBase>> _cmdPtrLists;
+
 
     std::string  _cmdStr;
 };

@@ -12,7 +12,7 @@
 #include "otlUse.h"
 
 
-#define SERVER_PROGRAM //后面删掉，在其他的里面包含了，这里加一下，是让后面的好看一点
+// #define SERVER_PROGRAM //后面删掉，在其他的里面包含了，这里加一下，是让后面的好看一点
 
 class CmdBase
 {

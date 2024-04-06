@@ -11,8 +11,7 @@ link_directories(${PROJECT_SOURCE_DIR}/lib)
 #数据模块
 set( DATAOBJ 
     ./dataObj/msg.cpp
-    ./dataObj/user.cpp
-    ./dataObj/userNotRecvMsg.cpp)
+    ./dataObj/user.cpp)
 
 #指令模块
 set( COMMANDOBJ 
@@ -29,6 +28,7 @@ set( MYCLIENT
 
 set(OTHER
     ../include/srcInclude/k_clip.cpp
+    ../include/srcInclude/other_funcation.cpp
 )
 
 if (MSVC)

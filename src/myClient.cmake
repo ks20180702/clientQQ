@@ -15,12 +15,12 @@ if(CMAKE_FILE_PATH)
     #数据模块
     set( DATAOBJ 
         ${CMAKE_FILE_PATH}/dataObj/msg.cpp
-        ${CMAKE_FILE_PATH}/dataObj/user.cpp
-        ${CMAKE_FILE_PATH}/dataObj/userNotRecvMsg.cpp)
+        ${CMAKE_FILE_PATH}/dataObj/user.cpp)
 
     #指令模块
     set( COMMANDOBJ 
         ${CMAKE_FILE_PATH}/commandObj/cmdCreateFactory.cpp
+        ${CMAKE_FILE_PATH}/commandObj/dataMsgCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/heartRequestCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/loginCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/userChangeCmd.cpp
@@ -32,7 +32,8 @@ if(CMAKE_FILE_PATH)
 
     set(OTHER
         ${CMAKE_FILE_PATH}/../include/srcInclude/k_clip.cpp
-        ${CMAKE_FILE_PATH}/../include/srcInclude/qt_clip.cpp)
+        ${CMAKE_FILE_PATH}/../include/srcInclude/qt_clip.cpp
+        ${CMAKE_FILE_PATH}/../include/srcInclude/other_funcation.cpp)
 
     #将需要的包设置给CLIENT
     set(CLIENT ${COMMANDOBJ} ${DATAOBJ} ${MYCLIENT} ${OTHER})

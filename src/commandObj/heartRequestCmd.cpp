@@ -1,4 +1,4 @@
-#include "./include/heartRequestCmd.h"
+﻿#include "./include/heartRequestCmd.h"
 
 CHeartRequestCmd::CHeartRequestCmd()
     :_currentUser(){_childCmdType=HEART_CMD;}
@@ -62,7 +62,7 @@ void CHeartRequestCmd::show_do_command_info()
 {
     if(!_childDoCommandReturn)
     {
-        std::cout<<"[E]  账号密码错误，退出"<<std::endl;
+        std::cout<<"[E]  账号密码错误"<<std::endl;
         return ;
     }
     std::cout<<"[I]  心跳请求"<<std::endl;

@@ -12,6 +12,13 @@ CMsg::CMsg(int sendId,int recvId,char *msgDateTime,char* content)
 {
     this->set_msg_info(sendId,recvId,msgDateTime,content);
 }
+CMsg::CMsg(int sendId,int recvId,std::string msgDateTime,std::string content)
+{
+    _sendId=sendId;
+    _recvId=recvId;
+    _msgDateTime=msgDateTime;
+    _content=content;
+}
 
 
 //为用户设置对应的值

@@ -17,6 +17,7 @@ public:
     CMsg();
     CMsg(const CMsg &other);
     CMsg(int sendId,int recvId,char *msgDateTime,char* content);
+    CMsg::CMsg(int sendId,int recvId,std::string msgDateTime,std::string content);
     ~CMsg();
 
     //为用户设置对应的值

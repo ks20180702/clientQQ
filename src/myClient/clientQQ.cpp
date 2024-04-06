@@ -85,7 +85,9 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
         useCmdObj->reload_recv_obj_by_json(jsonIA);      
         // useCmdObj->show_do_command_info();
 
+
         //加入到待查看指令中(主要为带聊天记录的数据指令)
+        std::unique_lock<std::mutex> lock(mtx);   // 创建互斥锁的 RAII 包装类对象 lock
         _cmdPtrLists.push_front(useCmdObj);
  
         _cmdStr="";
@@ -121,7 +123,7 @@ int ClientQQ::send_login_cmd(CUser &loginUser)
     cmdJsonStr=logInfo.get_command_obj_json();
     return send_main_part(cmdJsonStr,cmdJsonStr.length());
 }
-int ClientQQ::send_data_msg_cmd(Cuser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType)
+int ClientQQ::send_data_msg_cmd(CUser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType)
 {
     // CUser recvUser("123456","123456","",0); //这个用户的id其实就是1
     // CMsg testMsg(2,1,"","");
