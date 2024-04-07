@@ -57,6 +57,7 @@ public:
 	{
 		ar(cereal::make_nvp("_childDoCommandReturn", _childDoCommandReturn),
         cereal::make_nvp("_recvUser", _recvUser),
+        cereal::make_nvp("_requestType", _requestType),
         cereal::make_nvp("_msgData", _msgData));
 	}
 

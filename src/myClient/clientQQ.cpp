@@ -69,7 +69,7 @@ void ClientQQ::thread_recv_data(const int cliSoc,const struct sockaddr_in serAdd
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
     // 接收结构体
-    if(strcmp(buf,"KS_START")==0){_cmdStr="";}
+    if(strcmp(buf,"KS_START")==0){_cmdStr=""; std::cout<<"recv as new cmd "<<std::endl;}
     else if(strcmp(buf,"KS_END")==0)
     {
         std::shared_ptr<CmdCreateFactory> factoryCreater=std::make_shared<CmdCreateFactory>();
@@ -123,16 +123,18 @@ int ClientQQ::send_login_cmd(CUser &loginUser)
     cmdJsonStr=logInfo.get_command_obj_json();
     return send_main_part(cmdJsonStr,cmdJsonStr.length());
 }
-int ClientQQ::send_data_msg_cmd(CUser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType)
+int ClientQQ::send_data_msg_cmd(CUser &recvUser,CMsg dataMsg,CDataMsgCmd::MsgRequestType requestType)
 {
     // CUser recvUser("123456","123456","",0); //这个用户的id其实就是1
     // CMsg testMsg(2,1,"","");
 
     std::string cmdJsonStr;
     CDataMsgCmd dataMsgCmd(recvUser,dataMsg);
+
     dataMsgCmd.set_msg_request_type(requestType);
 
     cmdJsonStr=dataMsgCmd.get_command_obj_json();
+
     return send_main_part(cmdJsonStr,cmdJsonStr.length());
 }
 int ClientQQ::send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType)

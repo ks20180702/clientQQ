@@ -9,20 +9,11 @@
 #include "friendshipChangeCmd.h"
 #include "heartRequestCmd.h"
 #include "cmdCreateFactory.h"
-
+#include "other_funcation.h"
 
 
 #include <vector>
 #include <list>
-#include <memory>
-#include <thread>
-
-
-#include <mutex>                // 包含互斥锁的头文件
-#include <condition_variable>   // 包含条件变量的头文件
-
-std::mutex mtx;                 // 定义互斥锁对象 mtx
-std::condition_variable cv;     // 定义条件变量对象 cv
 
 /*
     win下的select不支持将标准输入加入，之前的代码有点不通用，
@@ -51,7 +42,7 @@ public:
     //发送登录指令//错误-1，成功0
     int send_login_cmd(CUser &loginUser);
     //发送登录指令//错误-1，成功0
-    int send_data_msg_cmd(CUser &recvUser,CMsg &dataMsg,CDataMsgCmd::MsgRequestType requestType);
+    int send_data_msg_cmd(CUser &recvUser,CMsg dataMsg,CDataMsgCmd::MsgRequestType requestType);
     //发送用户信息修改指令//错误-1，成功0
     int send_user_change_cmd(CUser &myUser,CUserChangeCmd::OpratorType operType);
     //发送好友关系修改指令//错误-1，成功0
