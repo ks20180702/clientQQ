@@ -22,6 +22,7 @@
 #endif
 
 #define SERVER_PORT 7070
+#define CLIEND_PORT 7071
 #define SEND_RECV_BUF_SIZE 1024
 
 #define SERVER_ADDR "114.55.229.106"

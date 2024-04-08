@@ -30,6 +30,7 @@ int ClientQQ::client_init(const char *ipAddr)
     _serAddr.sin_family=AF_INET;
     _serAddr.sin_port=htons(SERVER_PORT);
     _serAddr.sin_addr.s_addr=inet_addr(ipAddr);
+    // bind(_cliSoc, (sockaddr*)&_serAddr, sizeof(_serAddr));
     //    inet_pton(AF_INET,ipAddr,&(_serAddr.sin_addr));
 
     std::thread recvThread(&ClientQQ::thread_recv_data,this,_cliSoc,_serAddr);
@@ -37,6 +38,7 @@ int ClientQQ::client_init(const char *ipAddr)
 
     return 0;
 }
+
 
 void ClientQQ::thread_recv_data(const int cliSoc,const struct sockaddr_in serAddr)
 {
