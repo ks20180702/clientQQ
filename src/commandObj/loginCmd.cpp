@@ -1,4 +1,4 @@
-#include "./include/loginCmd.h"
+﻿#include "./include/loginCmd.h"
 
 CLoginCmd::CLoginCmd()
     :_loginUser(){_childCmdType=LOGIN_CMD;}
@@ -10,7 +10,7 @@ CLoginCmd::CLoginCmd(CUser &loginUser)
 } 
 
 #ifdef SERVER_PROGRAM
-    CmdBase::DoCommandReturnType CLoginCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    CmdBase::DoCommandReturnType CLoginCmd::do_command(COtlUse &cmdOtlUse)
     {
         _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
@@ -36,10 +36,8 @@ CLoginCmd::CLoginCmd(CUser &loginUser)
         if(notRevcMsgNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
         std::cout<<"[I]  user have no recv msg num = "<<notRevcMsgNumRe<<std::endl;
         
-        //获取当前用户的账号
-        account=_loginUser.get_account();
         _childDoCommandReturn=true;
-        return NEW_LOGIN_CMD;
+        return NORMAL_CMD;
     }
 #endif
 
@@ -66,7 +64,7 @@ void CLoginCmd::show_do_command_info()
         std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
         return ;
     }
-    std::cout<<"[I]  欢迎登录"<<std::endl;
+    std::cout<<"[I] 欢迎登录"<<std::endl;
     std::vector<CUser> friendLists=get_friend_lists();
     std::vector<CMsg> notRecvMsgsLists=get_not_recv_msg_lists();
     for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
@@ -96,6 +94,38 @@ std::vector<CUser> &CLoginCmd::get_friend_lists()
 std::vector<CMsg> &CLoginCmd::get_not_recv_msg_lists()
 {
     return _notRecvMsgsLists;
+}
+std::map<int,std::vector<CMsg>> CLoginCmd::get_msg_part_account_map()
+{
+    std::map<int,std::vector<CMsg>> msgsPartAccountMap;
+    std::map<int,std::vector<CMsg>>::iterator itMsgAccout;
+    for(std::vector<CMsg>::iterator it=_notRecvMsgsLists.begin();it!=_notRecvMsgsLists.end();it++)
+    {
+        itMsgAccout=msgsPartAccountMap.find((*it).get_send_id());
+        if(itMsgAccout==msgsPartAccountMap.end())
+        {
+            std::vector<CMsg> tempMsgVector;
+            tempMsgVector.push_back((*it));
+            msgsPartAccountMap.insert(std::map<int,std::vector<CMsg>>::value_type((*it).get_send_id(),tempMsgVector));
+        }
+        else{
+            (itMsgAccout->second).push_back((*it));
+        }
+    }
+
+    return msgsPartAccountMap;
+
+#if 0
+    // show this map
+    // for(std::map<int,std::vector<CMsg>>::iterator it=_msgsPartAccountMap.begin();it!=_msgsPartAccountMap.end();it++)
+    // {
+    //     std::cout<<"id = "<<(*it).first<<std::endl;
+    //     for(std::vector<CMsg>::iterator it2=((*it).second).begin();it2!=((*it).second).end();it2++)
+    //     {
+    //         (*it2).print();
+    //     }
+    // }
+#endif
 }
 void CLoginCmd::set_friend_lists(std::vector<CUser> &friendLists)
 {

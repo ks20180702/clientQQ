@@ -31,7 +31,7 @@ public:
 #ifdef SERVER_PROGRAM
     // 执行用户处理相关命令
     // 错误-1，0增加成功/修改成功
-    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account) override;
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse) override;
 #endif
     
     //获取当前指令对象的json字符串

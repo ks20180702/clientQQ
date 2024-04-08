@@ -10,7 +10,7 @@ CHeartRequestCmd::CHeartRequestCmd(CUser &currentUser)
 }
 
 #ifdef SERVER_PROGRAM
-    CmdBase::DoCommandReturnType CHeartRequestCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    CmdBase::DoCommandReturnType CHeartRequestCmd::do_command(COtlUse &cmdOtlUse)
     {
         _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 

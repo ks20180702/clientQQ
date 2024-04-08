@@ -30,7 +30,6 @@ int ClientQQ::client_init(const char *ipAddr)
     _serAddr.sin_family=AF_INET;
     _serAddr.sin_port=htons(SERVER_PORT);
     _serAddr.sin_addr.s_addr=inet_addr(ipAddr);
-    // bind(_cliSoc, (sockaddr*)&_serAddr, sizeof(_serAddr));
     //    inet_pton(AF_INET,ipAddr,&(_serAddr.sin_addr));
 
     std::thread recvThread(&ClientQQ::thread_recv_data,this,_cliSoc,_serAddr);
@@ -59,7 +58,6 @@ void ClientQQ::thread_recv_data(const int cliSoc,const struct sockaddr_in serAdd
         }
         if(ndfsNum==0) continue;
 
-        // FD_CLR(_cliSoc,&globalFdset); //待测试，应该可以删除的
         memset(buf,0,SEND_RECV_BUF_SIZE);
         r=recvfrom(cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&serAddr,&serLen);
         if(r<0) {strcpy(_errMsg,"recvfrom error "); return ;}

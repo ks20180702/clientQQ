@@ -31,7 +31,7 @@ public:
 
 #ifdef SERVER_PROGRAM
     //执行当前指令
-    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse);
 #endif
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
@@ -64,10 +64,9 @@ public:
 private:
     CUser _recvUser; //接收消息的用户
 
-    MsgRequestType _requestType;
+    CMsg _msgData; //发送的消息
 
-    //发现每次好像只会发一条，考虑移除vector
-    CMsg _msgData;
+    MsgRequestType _requestType;
 };
 
 #endif

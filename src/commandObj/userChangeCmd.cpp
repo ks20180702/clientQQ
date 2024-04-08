@@ -4,7 +4,7 @@ CUserChangeCmd::CUserChangeCmd()
     :_operatorUser(){_childCmdType=USER_CHANGE_CMD;}
 
 #ifdef SERVER_PROGRAM
-    CmdBase::DoCommandReturnType CUserChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    CmdBase::DoCommandReturnType CUserChangeCmd::do_command(COtlUse &cmdOtlUse)
     {
         _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 

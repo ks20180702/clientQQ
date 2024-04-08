@@ -12,7 +12,7 @@ CFriendshipChangeCmd::CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,Opera
 }
 
 #ifdef SERVER_PROGRAM
-    CmdBase::DoCommandReturnType CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    CmdBase::DoCommandReturnType CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
     {
         _childDoCommandReturn=false;
 

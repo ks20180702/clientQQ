@@ -1,4 +1,4 @@
-#ifndef __LOGINCMD_H__
+﻿#ifndef __LOGINCMD_H__
 #define __LOGINCMD_H__
 
 /*
@@ -13,7 +13,7 @@
 #include <cereal/archives/json.hpp>
 #include <cereal/types/vector.hpp>
 #include <cereal/types/string.hpp>
-
+#include <map>
 class CLoginCmd:public CmdBase
 {
 
@@ -26,7 +26,7 @@ public:
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
-    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse);
 #endif
  
     //获取当前指令对象的json字符串
@@ -48,6 +48,9 @@ public:
 
     //返回未接收消息的引用
     std::vector<CMsg> &get_not_recv_msg_lists();
+
+    //返回不同用户未接受消息的map
+    std::map<int,std::vector<CMsg>> get_msg_part_account_map();
 
     //设置好友列表
     void set_friend_lists(std::vector<CUser> &friendLists);
