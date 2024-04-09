@@ -14,4 +14,5 @@ std::string CurrentDate()
 
 std::mutex mtx;                 // 定义互斥锁对象 mtx
 std::mutex mtxFriendLists;                 // 定义互斥锁对象 mtx
+std::mutex mtxMsgLists;
 std::condition_variable cv;     // 定义条件变量对象 cv

@@ -17,7 +17,9 @@ set( DATAOBJ
 set( COMMANDOBJ 
     ./commandObj/cmdCreateFactory.cpp
     ./commandObj/loginCmd.cpp
+    ./commandObj/dataMsgCmd.cpp
     ./commandObj/heartRequestCmd.cpp
+    ./commandObj/heartMsgCmd.cpp
     ./commandObj/userChangeCmd.cpp
     ./commandObj/friendshipChangeCmd.cpp)
 

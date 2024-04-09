@@ -105,11 +105,20 @@ void ClientQQ::heart_thread_init(CUser &currentUser)
 }
 void ClientQQ::thread_send_heart_cmd(CUser &currentUser)
 {
+    //正常的心跳包30秒发送一次
+    //带未读消息的心跳包5秒发送一次
+    int16_t timesNum=5;
     while(1)
     {
-        Sleep(12000);
-        send_heart_cmd(currentUser);
-        Sleep(18000);
+        Sleep(2000);
+        if(timesNum%6==5)
+        {
+            send_heart_cmd(currentUser);
+            timesNum=0;
+        }
+        send_heart_msg_cmd(currentUser);
+        ++timesNum;
+        Sleep(3000);
     }
 }
 
@@ -175,6 +184,16 @@ int ClientQQ::send_heart_cmd(CUser &currentUser)
 
     CHeartRequestCmd heartCmd(currentUser);
     cmdJsonStr=heartCmd.get_command_obj_json();
+    return send_main_part(cmdJsonStr,cmdJsonStr.length());
+}
+int ClientQQ::send_heart_msg_cmd(CUser &currentUser)
+{
+    // CUser currentUser("222222","123456","",0);
+
+    std::string cmdJsonStr;
+
+    CHeartMsgCmd heartMsgCmd(currentUser);
+    cmdJsonStr=heartMsgCmd.get_command_obj_json();
     return send_main_part(cmdJsonStr,cmdJsonStr.length());
 }
 int ClientQQ::send_main_part(std::string &cmdJsonStr,int n)

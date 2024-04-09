@@ -8,6 +8,7 @@
 #include "dataMsgCmd.h"
 #include "friendshipChangeCmd.h"
 #include "heartRequestCmd.h"
+#include "heartMsgCmd.h"
 #include "cmdCreateFactory.h"
 #include "other_funcation.h"
 
@@ -49,6 +50,8 @@ public:
     int send_friendship_change_cmd(CUser &myUser,CUser &userFriend,CFriendshipChangeCmd::OperatorFriendShipType shipOperType);
     //发送心跳包指令//错误-1，成功0
     int send_heart_cmd(CUser &currentUser);
+    //发送心跳消息报指令//错误-1，成功0
+    int send_heart_msg_cmd(CUser &currentUser);
     //分批发送数据，暂定1024//错误-1，成功0
     int send_main_part(std::string &cmdJsonStr,int n);
 

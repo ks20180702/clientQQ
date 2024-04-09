@@ -22,6 +22,7 @@ if(CMAKE_FILE_PATH)
         ${CMAKE_FILE_PATH}/commandObj/cmdCreateFactory.cpp
         ${CMAKE_FILE_PATH}/commandObj/dataMsgCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/heartRequestCmd.cpp
+        ${CMAKE_FILE_PATH}/commandObj/heartMsgCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/loginCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/userChangeCmd.cpp
         ${CMAKE_FILE_PATH}/commandObj/friendshipChangeCmd.cpp)

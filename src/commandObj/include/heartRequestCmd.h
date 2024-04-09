@@ -39,10 +39,10 @@ public:
     virtual void show_do_command_info();
 
     // 设置当前的已登录对象
-    void set_login_user(CUser &loginUser);
+    void set_current_user(CUser &currentUser);
 
     // 获取登录对象的值(非同一个)，用于查看
-    CUser get_login_user();
+    CUser get_current_user();
 
     //返回好友列表的引用
     std::vector<CUser> &get_friend_lists();
@@ -76,7 +76,7 @@ private:
     //当前用户的好友信息
     std::vector<CUser> _friendLists;
 
-    //用户为接收的信息
+    //用户好友申请
     std::vector<CUser> _requestUserLists;
 };
 

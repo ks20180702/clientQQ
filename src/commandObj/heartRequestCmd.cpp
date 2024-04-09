@@ -78,10 +78,14 @@ void CHeartRequestCmd::show_do_command_info()
     }
 }
 
-// 设置当前的已登录对象
-void CHeartRequestCmd::set_login_user(CUser &currentUser)
+
+void CHeartRequestCmd::set_current_user(CUser &currentUser)
 {
     _currentUser=currentUser;
+}
+CUser CHeartRequestCmd::get_current_user()
+{
+    return _currentUser;
 }
 
 //返回好友列表的引用

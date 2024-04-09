@@ -24,6 +24,7 @@ public:
         USER_CHANGE_CMD,
         FRIEND_SHIP_CHANGE_CMD,
         HEART_CMD,
+        HEART_MSG_CMD,
     };
     enum DoCommandReturnType
     {
