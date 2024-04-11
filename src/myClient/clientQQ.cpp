@@ -69,7 +69,7 @@ void ClientQQ::thread_recv_data(const int cliSoc,const struct sockaddr_in serAdd
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
     // 接收结构体
-    if(strcmp(buf,"KS_START")==0){_cmdStr=""; std::cout<<"recv as new cmd "<<std::endl;}
+    if(strcmp(buf,"KS_START")==0){_cmdStr="";}
     else if(strcmp(buf,"KS_END")==0)
     {
         std::shared_ptr<CmdCreateFactory> factoryCreater=std::make_shared<CmdCreateFactory>();
@@ -77,14 +77,22 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
         //设置childCmdType
         CmdBase::CmdType childCmdType;
         std::istringstream istrStream(_cmdStr+CMD_STR_ADD);
-        cereal::JSONInputArchive jsonIA(istrStream);
-        jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
+        std::shared_ptr<CmdBase> useCmdObj;
+        try
+        {
+            cereal::JSONInputArchive jsonIA(istrStream);
+            jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
-        //为对应的指针对象初始化
-        std::shared_ptr<CmdBase> useCmdObj=shared_ptr<CmdBase>(factoryCreater->create_cmd_ptr(childCmdType));
-        useCmdObj->reload_recv_obj_by_json(jsonIA);      
-        // useCmdObj->show_do_command_info();
-
+            //为对应的指针对象初始化
+            useCmdObj=shared_ptr<CmdBase>(factoryCreater->create_cmd_ptr(childCmdType));
+            useCmdObj->reload_recv_obj_by_json(jsonIA);
+        }
+        catch(const std::exception& e)
+        {
+            strcpy(_errMsg,"[E]  string to obj have a error"); 
+            std::cerr << e.what() << '\n';
+            return -1;
+        }
 
         //加入到待查看指令中(主要为带聊天记录的数据指令)
         std::unique_lock<std::mutex> lock(mtx);   // 创建互斥锁的 RAII 包装类对象 lock
@@ -106,19 +114,19 @@ void ClientQQ::heart_thread_init(CUser &currentUser)
 void ClientQQ::thread_send_heart_cmd(CUser &currentUser)
 {
     //正常的心跳包30秒发送一次
-    //带未读消息的心跳包5秒发送一次
-    int16_t timesNum=5;
+    //带未读消息的心跳包10秒发送一次
+    int16_t timesNum=3;
     while(1)
     {
-        Sleep(2000);
-        if(timesNum%6==5)
+        Sleep(4000);
+        if(timesNum%4==3)
         {
             send_heart_cmd(currentUser);
             timesNum=0;
         }
         send_heart_msg_cmd(currentUser);
         ++timesNum;
-        Sleep(3000);
+        Sleep(6000);
     }
 }
 
@@ -206,7 +214,7 @@ int ClientQQ::send_main_part(std::string &cmdJsonStr,int n)
     //发送开始标记
     w=sendto(_cliSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
     if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-    Sleep(50); 
+    Sleep(100); 
 
     //发送指定字节流
     while(nowNum<n)
@@ -216,7 +224,7 @@ int ClientQQ::send_main_part(std::string &cmdJsonStr,int n)
         else{sendLen=n-nowNum;}
 
         w=sendto(_cliSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
-        Sleep(50);
+        Sleep(100);
         if(w<0) {strcpy(_errMsg,"send error"); return -1;}
 
         nowNum+=w;
